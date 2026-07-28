@@ -1,5 +1,6 @@
 import { createStore } from './store.js'
 import { todayISO, formatDay } from './dates.js'
+import { SERVICES, defaultMinutes } from './services.js'
 
 const store = createStore(localStorage)
 
@@ -81,3 +82,67 @@ document.getElementById('monthTitle').textContent =
   `${nowDate.getMonth() + 1}월 ${nowDate.getFullYear()}`
 
 render()
+
+// ── 예약 추가 ──────────────────────────────────────────
+
+const dialog = document.getElementById('addDialog')
+const serviceSelect = document.getElementById('f-service')
+const durationOut = document.getElementById('f-duration')
+
+// 시술 목록을 선택칸에 채운다
+for (const s of SERVICES) {
+  const opt = document.createElement('option')
+  opt.value = s.name
+  opt.textContent = s.name
+  serviceSelect.append(opt)
+}
+
+// 현재 표시 중인 소요 시간(분)
+let durationMin = defaultMinutes(SERVICES[0].name)
+
+function showDuration() {
+  durationOut.textContent = `${durationMin}분`
+}
+
+// 시술을 바꾸면 기본 시간이 자동으로 들어간다.
+// 언니가 이 칸에 손을 안 대고도 저장할 수 있어야 한다.
+serviceSelect.addEventListener('change', () => {
+  durationMin = defaultMinutes(serviceSelect.value)
+  showDuration()
+})
+
+// 10분 단위 조절. 같은 시술이라도 머리숱·기장에 따라 시간이 다르다.
+document.getElementById('f-minus').addEventListener('click', () => {
+  durationMin = Math.max(10, durationMin - 10)
+  showDuration()
+})
+document.getElementById('f-plus').addEventListener('click', () => {
+  durationMin += 10
+  showDuration()
+})
+
+// 폼을 열 때마다 오늘 날짜와 다음 정시로 초기화한다
+document.getElementById('addBtn').addEventListener('click', () => {
+  const now = new Date()
+  document.getElementById('f-date').value = todayISO(now)
+  document.getElementById('f-time').value =
+    `${String((now.getHours() + 1) % 24).padStart(2, '0')}:00`
+  serviceSelect.selectedIndex = 0
+  durationMin = defaultMinutes(SERVICES[0].name)
+  showDuration()
+  document.getElementById('f-name').value = ''
+  dialog.showModal()
+})
+
+document.getElementById('f-cancel').addEventListener('click', () => dialog.close())
+
+document.getElementById('addForm').addEventListener('submit', () => {
+  store.add({
+    date: document.getElementById('f-date').value,
+    time: document.getElementById('f-time').value,
+    service: serviceSelect.value,
+    durationMin,
+    customerName: document.getElementById('f-name').value.trim(),
+  })
+  render()
+})

@@ -14,6 +14,44 @@
 
   <main id="list"></main>
 
+  <dialog id="addDialog">
+    <form id="addForm" method="dialog">
+      <div class="field">
+        <label for="f-date">날짜</label>
+        <input type="date" id="f-date" required>
+      </div>
+
+      <div class="field">
+        <label for="f-time">시각</label>
+        <input type="time" id="f-time" step="600" required>
+      </div>
+
+      <div class="field">
+        <label for="f-service">시술</label>
+        <select id="f-service"></select>
+      </div>
+
+      <div class="field">
+        <label for="f-duration">예상 시간</label>
+        <div class="duration">
+          <button type="button" id="f-minus" aria-label="10분 줄이기">−</button>
+          <output id="f-duration">90분</output>
+          <button type="button" id="f-plus" aria-label="10분 늘리기">+</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="f-name">손님 이름 (선택)</label>
+        <input type="text" id="f-name" autocomplete="off">
+      </div>
+
+      <div class="dialog-actions">
+        <button type="button" id="f-cancel">닫기</button>
+        <button type="submit" id="f-save">저장</button>
+      </div>
+    </form>
+  </dialog>
+
   <button id="addBtn" class="fab">+ 직접 추가</button>
 
   <script type="module" src="js/home.js"></script>
