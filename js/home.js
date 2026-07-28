@@ -177,3 +177,8 @@ document.getElementById('list').addEventListener('click', (e) => {
     render()
   }
 })
+
+// 서비스 워커 등록 — 오프라인 동작과 홈 화면 설치를 가능하게 한다
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js')
+}
