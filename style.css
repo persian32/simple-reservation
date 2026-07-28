@@ -1,0 +1,116 @@
+/* 색은 최소한만 쓴다. 1단계에서 색이 들어가는 곳은 취소된 예약(회색)뿐이다.
+   색이 적을수록 그 색이 나타났을 때 눈에 띈다.
+   (2단계에서 "AI 판독이 확실하지 않은 항목"에 노란색이 하나 추가된다) */
+:root {
+  --bg: #ffffff;
+  --text: #1a1a1a;
+  --muted: #8a8a8a;
+  --line: #e6e6e6;
+  --accent: #1a1a1a;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 0 0 88px;             /* 아래 버튼에 가리지 않게 여백 */
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+               "Noto Sans KR", sans-serif;
+  font-size: 17px;               /* 폰에서 편하게 읽히는 크기 */
+  color: var(--text);
+  background: var(--bg);
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+}
+
+h1 { margin: 0; font-size: 20px; font-weight: 600; }
+
+.icon-btn {
+  font-size: 22px;
+  text-decoration: none;
+  color: var(--text);
+  padding: 4px 8px;
+}
+
+main { padding: 8px 20px; }
+
+/* 날짜 구분 줄 */
+.day {
+  margin: 24px 0 8px;
+  font-size: 15px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+/* 예약 한 줄: 시각 / 이름 / 시술 */
+.row {
+  display: grid;
+  grid-template-columns: 68px 1fr auto;
+  gap: 12px;
+  align-items: baseline;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.row .time { font-variant-numeric: tabular-nums; color: var(--muted); }
+.row .name { font-weight: 500; }
+.row .name a { color: inherit; text-decoration: none; border-bottom: 1px solid var(--line); }
+.row .service { color: var(--muted); font-size: 15px; }
+
+/* 취소된 예약 */
+.row.cancelled { color: var(--muted); }
+.row.cancelled .time,
+.row.cancelled .name,
+.row.cancelled .service { text-decoration: line-through; }
+
+.empty { color: var(--muted); padding: 40px 0; text-align: center; }
+
+/* 아래 고정 버튼 */
+.fab {
+  position: fixed;
+  left: 20px;
+  right: 20px;
+  bottom: 24px;
+  padding: 16px;
+  font-size: 17px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--accent);
+  border: none;
+  border-radius: 12px;
+}
+
+/* 폼 */
+.field { margin: 20px 0; }
+.field label { display: block; margin-bottom: 8px; font-size: 15px; color: var(--muted); }
+
+input, select, textarea {
+  width: 100%;
+  padding: 14px;
+  font-size: 17px;              /* 16px 미만이면 아이폰이 화면을 확대해버린다 */
+  font-family: inherit;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.duration { display: flex; align-items: center; gap: 12px; }
+.duration button {
+  width: 52px; height: 52px;
+  font-size: 22px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+}
+.duration output { flex: 1; text-align: center; font-variant-numeric: tabular-nums; }
