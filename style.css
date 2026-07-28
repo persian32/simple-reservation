@@ -166,3 +166,16 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.4); }
   color: var(--muted);
   line-height: 1.9;
 }
+
+.hint { color: var(--muted); font-size: 15px; line-height: 1.7; margin: 8px 0 16px; }
+
+button.wide {
+  width: 100%;
+  padding: 16px;
+  font-size: 17px;
+  font-family: inherit;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+}

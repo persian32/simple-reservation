@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>설정</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1><a class="back" href="index.html">←</a> 설정</h1>
+  </header>
+
+  <main>
+    <div class="field">
+      <label>데이터 백업</label>
+      <p class="hint">
+        폰이 고장 나면 예약 기록이 사라집니다.
+        가끔 내려받아 자기 카톡으로 보내두세요.
+      </p>
+      <button id="exportBtn" class="wide">파일로 내려받기</button>
+      <p class="hint" id="count"></p>
+    </div>
+  </main>
+
+  <script type="module" src="js/settings.js"></script>
+</body>
+</html>
