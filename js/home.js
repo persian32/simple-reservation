@@ -146,3 +146,34 @@ document.getElementById('addForm').addEventListener('submit', () => {
   })
   render()
 })
+
+// ── 예약 취소 / 삭제 ────────────────────────────────────
+
+// 예약 줄을 누르면 무엇을 할지 묻는다.
+// 이름 링크를 누른 경우는 손님 이력으로 가야 하므로 여기서 처리하지 않는다.
+document.getElementById('list').addEventListener('click', (e) => {
+  if (e.target.closest('a')) return
+
+  const row = e.target.closest('.row')
+  if (!row) return
+
+  const id = row.dataset.id
+  const target = store.list().find((r) => r.id === id)
+  if (!target) return
+
+  const label = `${target.time} ${target.customerName || ''} ${target.service}`.trim()
+
+  if (target.status === 'active') {
+    if (confirm(`${label}\n\n취소로 표시할까요?`)) {
+      store.cancel(id)
+      render()
+    }
+    return
+  }
+
+  // 이미 취소된 예약을 다시 누르면 완전히 지울지 묻는다
+  if (confirm(`${label}\n\n이 예약을 완전히 지울까요?`)) {
+    store.remove(id)
+    render()
+  }
+})
