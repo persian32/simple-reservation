@@ -31,7 +31,16 @@ npm test
 브라우저 `localStorage`의 `reservations` 키에 JSON 배열로 저장된다.
 서버·계정·네트워크 요청이 없다. 설정 화면에서 파일로 내보낼 수 있다.
 
-## 설계 문서
+## 문서
 
-- 설계: `docs/specs/2026-07-28-헤어살롱-예약앱-설계.md`
-- 1단계 계획: `docs/plans/2026-07-28-1단계-손입력앱.md`
+| | |
+|---|---|
+| [홈](docs/wiki/Home.md) | 개요 |
+| [왜 만들었나](docs/wiki/Background.md) | 관찰, 그리고 관찰이 틀렸던 것들 |
+| [설계 결정](docs/wiki/Design.md) | 성공 기준, 원칙, 비용 문제를 푼 방법 |
+| [기능](docs/wiki/Features.md) | 화면별로 무엇이 되는가 |
+| [기술 구조](docs/wiki/Architecture.md) | 파일 구조와 그렇게 나눈 이유 |
+| [개발 기록](docs/wiki/Devlog.md) | 실제로 잡힌 버그와 교훈 |
+| [남은 일](docs/wiki/Roadmap.md) | 갈림길과 2단계 |
+
+원본 설계·계획서: `docs/specs/`, `docs/plans/`
