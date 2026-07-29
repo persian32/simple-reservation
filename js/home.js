@@ -221,8 +221,3 @@ document.getElementById('actClose').addEventListener('click', () => {
   actionId = null
   actionDialog.close()
 })
-
-// 서비스 워커 등록 — 오프라인 동작과 홈 화면 설치를 가능하게 한다
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js')
-}

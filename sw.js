@@ -1,6 +1,6 @@
 // 앱 파일을 폰에 저장해두어 인터넷이 끊겨도 열리게 한다.
 // 파일을 고칠 때마다 CACHE 이름의 숫자를 올려야 새 버전이 반영된다.
-const CACHE = 'reservation-v3'
+const CACHE = 'reservation-v4'
 
 const FILES = [
   './', 'index.html', 'customer.html', 'customers.html', 'settings.html', 'style.css',
@@ -11,7 +11,15 @@ const FILES = [
 
 self.addEventListener('install', (e) => {
   self.skipWaiting()                                    // 새 버전을 바로 활성화한다
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(FILES)))
+
+  // { cache: 'reload' } 가 핵심이다. 이게 없으면 브라우저에 남아 있던 옛 사본을
+  // 그대로 저장해버려서, 새 파일과 옛 파일이 섞인 채로 캐시가 만들어진다.
+  // 그러면 새 코드가 옛 파일에 없는 함수를 찾다가 앱이 통째로 죽는다.
+  e.waitUntil(
+    caches.open(CACHE).then((c) =>
+      c.addAll(FILES.map((f) => new Request(f, { cache: 'reload' })))
+    )
+  )
 })
 
 // 이름이 다른 옛 캐시는 지운다
