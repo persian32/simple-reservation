@@ -66,8 +66,12 @@ document.getElementById('s-add').addEventListener('click', () => {
     return
   }
 
-  if (!services.add(name, minutes)) {
-    alert('이미 목록에 있는 시술입니다.')
+  const result = services.add(name, minutes)
+  if (result !== true) {
+    // 별칭이면 어느 시술과 같은 것인지 알려준다 — "파마"를 넣으려 하면 "펌"이 있다고
+    alert(result === name
+      ? '이미 목록에 있는 시술입니다.'
+      : `'${name}'은(는) '${result}'과(와) 같은 시술로 되어 있습니다.`)
     return
   }
 

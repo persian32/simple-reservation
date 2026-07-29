@@ -47,7 +47,8 @@ test('시술을 추가하면 목록에 들어간다', () => {
 test('같은 이름은 두 번 추가되지 않는다', () => {
   const services = createServices(fakeStorage())
   assert.equal(services.add('세팅', 60), true)
-  assert.equal(services.add('세팅', 90), false)
+  // 중복이면 false 가 아니라 부딪힌 시술의 정식 이름을 돌려준다
+  assert.equal(services.add('세팅', 90), '세팅')
 
   assert.equal(services.list().length, 8)
   assert.equal(services.defaultMinutes('세팅'), 60)   // 먼저 넣은 값이 남는다
@@ -77,4 +78,30 @@ test('한 저장소를 공유하면 변경이 보인다', () => {
   createServices(storage).add('세팅', 60)
 
   assert.equal(createServices(storage).list().length, 8)
+})
+
+test('별칭으로도 같은 시술을 찾는다', () => {
+  // 말로는 "펌"이라 해도 종이에는 "파마"라고 쓴다. 둘이 갈라지면 이력이 쪼개진다.
+  const services = createServices(fakeStorage())
+  assert.equal(services.resolve('파마'), '펌')
+  assert.equal(services.resolve('펌'), '펌')
+  assert.equal(services.resolve('없는시술'), null)
+})
+
+test('별칭으로 물어도 기본 시간이 나온다', () => {
+  const services = createServices(fakeStorage())
+  assert.equal(services.defaultMinutes('파마'), 150)
+})
+
+test('별칭을 새 시술로 추가하려 하면 정식 이름을 알려준다', () => {
+  const services = createServices(fakeStorage())
+  assert.equal(services.add('파마', 100), '펌')
+  assert.equal(services.list().length, 7)          // 늘어나지 않는다
+  assert.equal(services.defaultMinutes('펌'), 150)  // 기존 값이 유지된다
+})
+
+test('같은 이름을 다시 넣으면 그 이름을 돌려준다', () => {
+  const services = createServices(fakeStorage())
+  assert.equal(services.add('염색', 60), '염색')
+  assert.equal(services.list().length, 7)
 })
