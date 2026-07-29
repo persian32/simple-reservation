@@ -28,10 +28,18 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* 이 앱은 폰용이다. 데스크톱에서 열어도 폰 폭을 유지한다 —
+   가로로 늘어나면 시각과 시술이 화면 양 끝으로 벌어져 눈이 왕복하게 된다. */
+main { max-width: 480px; margin-left: auto; margin-right: auto; }
+
 header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
   padding: 16px 20px;
   border-bottom: 1px solid var(--line);
   position: sticky;
@@ -97,8 +105,9 @@ main { padding: 8px 20px; }
 /* 아래 고정 버튼 */
 .fab {
   position: fixed;
-  left: 20px;
-  right: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(calc(100% - 40px), 440px);
   bottom: 24px;
   padding: 16px;
   font-size: 17px;
