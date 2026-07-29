@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>심플예약</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2e5d4b">
+</head>
+<body>
+  <header class="bar">
+    <h1><a class="back" href="index.html">←</a> 설정</h1>
+  </header>
+
+  <main>
+    <div class="field">
+      <label>시술 목록</label>
+      <p class="hint">
+        예약을 넣을 때 고르는 시술입니다.
+        기본 시간은 예약마다 10분 단위로 조절할 수 있습니다.
+      </p>
+      <div id="serviceList"></div>
+
+      <div class="service-add">
+        <p class="add-title">새 시술 추가</p>
+        <input type="text" id="s-name" placeholder="예: 세팅" autocomplete="off">
+        <div class="add-row">
+          <input type="number" id="s-min" min="10" step="10" value="30" aria-label="기본 시간(분)">
+          <span class="unit">분쯤 걸림</span>
+          <button type="button" id="s-add">추가</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>데이터 백업</label>
+      <p class="hint">
+        폰이 고장 나면 예약 기록이 사라집니다.
+        가끔 내려받아 자기 카톡으로 보내두세요.
+      </p>
+      <button id="exportBtn" class="wide">파일로 내려받기</button>
+      <p class="hint" id="count"></p>
+    </div>
+  </main>
+
+  <script type="module" src="js/settings.js"></script>
+</body>
+</html>
