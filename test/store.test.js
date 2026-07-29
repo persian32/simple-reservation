@@ -42,7 +42,7 @@ test('추가할 때 빠진 값은 자동으로 채워진다', () => {
   const r = store.list()[0]
   assert.equal(r.id, 'id1')
   assert.equal(r.customerName, '')     // 이름은 없을 수 있다
-  assert.equal(r.durationMin, 90)      // 염색 기본값
+  assert.equal(r.durationMin, 30)      // 값이 빠졌을 때의 안전망
   assert.equal(r.status, 'active')
   assert.equal(r.source, 'manual')
   assert.equal(r.createdAt, '2026-03-17T09:00:00.000Z')

@@ -1,5 +1,3 @@
-import { defaultMinutes } from './services.js'
-
 const KEY = 'reservations'
 
 // 저장소를 만든다.
@@ -30,7 +28,8 @@ export function createStore(storage, deps = {}) {
         time: input.time,
         customerName: input.customerName || '',
         service: input.service,
-        durationMin: input.durationMin ?? defaultMinutes(input.service),
+        // 화면이 항상 값을 넘긴다. 이 30분은 값이 빠진 경우의 마지막 안전망이다.
+        durationMin: input.durationMin ?? 30,
         status: 'active',
         source: input.source || 'manual',
         createdAt: stamp,
