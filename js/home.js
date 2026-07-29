@@ -137,7 +137,7 @@ document.getElementById('addBtn').addEventListener('click', () => {
 document.getElementById('f-cancel').addEventListener('click', () => dialog.close())
 
 document.getElementById('addForm').addEventListener('submit', () => {
-  store.add({
+  const saved = store.add({
     date: document.getElementById('f-date').value,
     time: document.getElementById('f-time').value,
     service: serviceSelect.value,
@@ -145,6 +145,10 @@ document.getElementById('addForm').addEventListener('submit', () => {
     customerName: document.getElementById('f-name').value.trim(),
   })
   render()
+  // 지난 날짜는 홈 목록에서 걸러지므로, 저장이 안 된 줄 알고 다시 넣는 걸 막는다
+  if (saved.date < todayISO()) {
+    alert('저장했습니다. 지난 날짜라 목록에는 안 보이고 손님 이력에만 남습니다.')
+  }
 })
 
 // ── 예약 취소 / 삭제 ────────────────────────────────────
