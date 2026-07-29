@@ -1,8 +1,9 @@
 import { createStore } from './store.js'
 import { todayISO, formatDay } from './dates.js'
-import { SERVICES, defaultMinutes } from './services.js'
+import { createServices } from './services.js'
 
 const store = createStore(localStorage)
+const services = createServices(localStorage)
 
 // 오늘·내일에는 이름을 붙여 눈에 띄게 한다
 function dayLabel(iso, today, tomorrow) {
@@ -89,16 +90,8 @@ const dialog = document.getElementById('addDialog')
 const serviceSelect = document.getElementById('f-service')
 const durationOut = document.getElementById('f-duration')
 
-// 시술 목록을 선택칸에 채운다
-for (const s of SERVICES) {
-  const opt = document.createElement('option')
-  opt.value = s.name
-  opt.textContent = s.name
-  serviceSelect.append(opt)
-}
-
 // 현재 표시 중인 소요 시간(분)
-let durationMin = defaultMinutes(SERVICES[0].name)
+let durationMin = 30
 
 function showDuration() {
   durationOut.textContent = `${durationMin}분`
@@ -107,7 +100,7 @@ function showDuration() {
 // 시술을 바꾸면 기본 시간이 자동으로 들어간다.
 // 언니가 이 칸에 손을 안 대고도 저장할 수 있어야 한다.
 serviceSelect.addEventListener('change', () => {
-  durationMin = defaultMinutes(serviceSelect.value)
+  durationMin = services.defaultMinutes(serviceSelect.value)
   showDuration()
 })
 
@@ -127,8 +120,19 @@ document.getElementById('addBtn').addEventListener('click', () => {
   document.getElementById('f-date').value = todayISO(now)
   document.getElementById('f-time').value =
     `${String((now.getHours() + 1) % 24).padStart(2, '0')}:00`
+
+  // 시술 목록을 새로 채운다 — 설정에서 추가·삭제한 것이 바로 반영되게
+  serviceSelect.textContent = ''
+  const serviceRows = services.list()
+  serviceSelect.append(...serviceRows.map((s) => {
+    const option = document.createElement('option')
+    option.value = s.name
+    option.textContent = s.name
+    return option
+  }))
+
   serviceSelect.selectedIndex = 0
-  durationMin = defaultMinutes(SERVICES[0].name)
+  durationMin = services.defaultMinutes(serviceRows[0].name)
   showDuration()
   document.getElementById('f-name').value = ''
 
