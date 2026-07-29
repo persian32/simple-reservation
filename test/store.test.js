@@ -111,3 +111,24 @@ test('내보내기는 예약 전체를 JSON 문자열로 준다', () => {
   assert.equal(parsed.length, 1)
   assert.equal(parsed[0].service, '염색')
 })
+
+test('되살리면 다시 활성 상태가 된다', () => {
+  const store = makeStore()
+  store.add({ date: '2026-03-17', time: '10:20', service: '염색' })
+  store.cancel('id1')
+  store.restore('id1')
+
+  const rows = store.list()
+  assert.equal(rows.length, 1)
+  assert.equal(rows[0].status, 'active')
+})
+
+test('되살린 예약은 손님 이력에 다시 나온다', () => {
+  const store = makeStore()
+  store.add({ date: '2026-03-17', time: '10:20', customerName: '화선언니', service: '염색' })
+  store.cancel('id1')
+  assert.equal(store.byCustomer('화선언니').length, 0)
+
+  store.restore('id1')
+  assert.equal(store.byCustomer('화선언니').length, 1)
+})

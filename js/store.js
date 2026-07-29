@@ -52,6 +52,16 @@ export function createStore(storage, deps = {}) {
       save(rows)
     },
 
+    // 취소를 되돌린다. 손님이 마음을 바꾸는 일이 흔하다.
+    restore(id) {
+      const rows = load()
+      const row = rows.find((r) => r.id === id)
+      if (!row) return
+      row.status = 'active'
+      row.updatedAt = now()
+      save(rows)
+    },
+
     // 완전 삭제. 잘못 넣은 예약을 지울 때만 쓴다.
     remove(id) {
       save(load().filter((r) => r.id !== id))
