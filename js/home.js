@@ -205,19 +205,26 @@ document.getElementById('f-plus').addEventListener('click', () => {
   showDuration()
 })
 
-// 폼을 열 때마다 오늘 날짜와 다음 정시로 초기화한다
-document.getElementById('addBtn').addEventListener('click', () => {
+// 지금 고치고 있는 예약 id. 새로 넣는 중이면 null.
+let editingId = null
+
+// 폼을 연다. row 를 주면 그 예약을 고치는 모드가 된다.
+function openForm(row) {
+  editingId = row ? row.id : null
   const now = new Date()
+
   // 달력에서 고른 날짜로 채운다 — 그 날을 보고 있으니 거기에 넣으려는 것이다
-  document.getElementById('f-date').value = selected
-  document.getElementById('f-time').value =
-    `${String((now.getHours() + 1) % 24).padStart(2, '0')}:00`
+  document.getElementById('f-date').value = row ? row.date : selected
+  document.getElementById('f-time').value = row
+    ? row.time
+    : `${String((now.getHours() + 1) % 24).padStart(2, '0')}:00`
 
   // 시술 목록을 새로 채운다 — 설정에서 추가·삭제한 것이 바로 반영되게
-  fillServices()
-  durationMin = services.defaultMinutes(serviceSelect.value)
+  fillServices(row ? row.service : undefined)
+  durationMin = row ? row.durationMin : services.defaultMinutes(serviceSelect.value)
   showDuration()
-  document.getElementById('f-name').value = ''
+  document.getElementById('f-name').value = row ? row.customerName : ''
+  document.getElementById('f-save').textContent = row ? '고치기' : '저장'
 
   // 이미 있는 손님 이름을 제안한다 — 오타 하나로 이력이 쪼개지는 걸 막는다
   const knownNames = document.getElementById('knownNames')
@@ -230,18 +237,24 @@ document.getElementById('addBtn').addEventListener('click', () => {
   }))
 
   dialog.showModal()
-})
+}
+
+document.getElementById('addBtn').addEventListener('click', () => openForm(null))
 
 document.getElementById('f-cancel').addEventListener('click', () => dialog.close())
 
 document.getElementById('addForm').addEventListener('submit', () => {
-  const saved = store.add({
+  const input = {
     date: document.getElementById('f-date').value,
     time: document.getElementById('f-time').value,
     service: serviceSelect.value,
     durationMin,
     customerName: document.getElementById('f-name').value.trim(),
-  })
+  }
+  // 고치는 중이면 같은 예약을 갱신한다. 지우고 새로 넣으면
+  // 손님 이력에 방문이 하나 더 생겨 숫자가 틀어진다.
+  const saved = editingId ? store.update(editingId, input) : store.add(input)
+  editingId = null
   // 저장한 날짜로 옮겨 보여준다 — 넣은 것이 눈앞에 보여야 저장된 줄 안다
   selected = saved.date
   view = { year: Number(selected.slice(0, 4)), month: Number(selected.slice(5, 7)) }
@@ -289,6 +302,13 @@ function runAction(fn) {
   actionDialog.close()
   render()
 }
+
+document.getElementById('actEdit').addEventListener('click', () => {
+  const row = store.list().find((r) => r.id === actionId)
+  actionId = null
+  actionDialog.close()
+  if (row) openForm(row)
+})
 
 actCancel.addEventListener('click', () => runAction((id) => store.cancel(id)))
 actRestore.addEventListener('click', () => runAction((id) => store.restore(id)))

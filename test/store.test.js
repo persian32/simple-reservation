@@ -132,3 +132,30 @@ test('되살린 예약은 손님 이력에 다시 나온다', () => {
   store.restore('id1')
   assert.equal(store.byCustomer('화선언니').length, 1)
 })
+
+test('예약 내용을 고칠 수 있다', () => {
+  const store = makeStore()
+  store.add({ date: '2026-03-17', time: '10:20', customerName: '화선언니', service: '염색' })
+  store.update('id1', { time: '15:00', durationMin: 120 })
+
+  const r = store.list()[0]
+  assert.equal(r.time, '15:00')
+  assert.equal(r.durationMin, 120)
+  assert.equal(r.customerName, '화선언니')   // 안 건드린 값은 그대로
+  assert.equal(r.id, 'id1')                  // 같은 예약이다
+})
+
+test('고쳐도 방문 횟수가 늘지 않는다', () => {
+  // 지우고 새로 넣으면 이력에 방문이 하나 더 생겨 숫자가 틀어진다
+  const store = makeStore()
+  store.add({ date: '2026-03-17', time: '10:20', customerName: '화선언니', service: '염색' })
+  store.update('id1', { date: '2026-03-18' })
+
+  assert.equal(store.byCustomer('화선언니').length, 1)
+  assert.equal(store.byCustomer('화선언니')[0].date, '2026-03-18')
+})
+
+test('없는 예약을 고치려 하면 null 을 돌려준다', () => {
+  const store = makeStore()
+  assert.equal(store.update('없는id', { time: '11:00' }), null)
+})

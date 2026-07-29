@@ -1,6 +1,6 @@
 // 앱 파일을 폰에 저장해두어 인터넷이 끊겨도 열리게 한다.
 // 파일을 고칠 때마다 CACHE 이름의 숫자를 올려야 새 버전이 반영된다.
-const CACHE = 'reservation-v11'
+const CACHE = 'reservation-v12'
 
 const FILES = [
   './', 'index.html', 'customer.html', 'customers.html', 'settings.html', 'style.css',

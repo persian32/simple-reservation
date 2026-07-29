@@ -40,6 +40,17 @@ export function createStore(storage, deps = {}) {
       return row
     },
 
+    // 예약 내용을 고친다. 손님이 시간을 바꾸는 일이 주 4~5회 있다.
+    // 지우고 새로 넣으면 손님 이력에 방문이 하나 더 생겨 숫자가 틀어진다.
+    update(id, patch) {
+      const rows = load()
+      const row = rows.find((r) => r.id === id)
+      if (!row) return null
+      Object.assign(row, patch, { updatedAt: now() })
+      save(rows)
+      return row
+    },
+
     // 취소. 지우지 않고 상태만 바꾼다 —
     // 이 손님이 지난달에도 취소했는지 알 수 있어야 하기 때문.
     cancel(id) {
