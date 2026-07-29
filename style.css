@@ -1,12 +1,16 @@
-/* 색은 최소한만 쓴다. 1단계에서 색이 들어가는 곳은 취소된 예약(회색)뿐이다.
-   색이 적을수록 그 색이 나타났을 때 눈에 띈다.
+/* 색은 최소한만 쓴다. 강조색(--accent)이 나타나는 곳은
+   주버튼과 "오늘" 표시 두 군데뿐 — 색이 적을수록 그 색이 눈에 띈다.
+   배경은 순백이 아니라 따뜻한 종이색이다. 폰을 하루 종일 보는 사람에게
+   순백(#fff)은 눈이 부시고, 미묘하게 따뜻한 쪽이 오래 봐도 편하다.
    (2단계에서 "AI 판독이 확실하지 않은 항목"에 노란색이 하나 추가된다) */
 :root {
-  --bg: #ffffff;
-  --text: #1a1a1a;
-  --muted: #8a8a8a;
-  --line: #e6e6e6;
-  --accent: #1a1a1a;
+  --bg: #faf9f6;          /* 따뜻한 종이색 */
+  --surface: #ffffff;     /* 대화상자처럼 배경 위로 떠야 하는 면 */
+  --text: #24211e;        /* 순검정 대신 부드러운 먹색 */
+  --muted: #8a8378;       /* 따뜻한 회색 */
+  --line: #e8e3db;
+  --accent: #2e5d4b;      /* 깊은 소나무 */
+  --accent-soft: #eef2ef; /* 강조색의 아주 옅은 배경 */
 }
 
 * { box-sizing: border-box; }
@@ -17,8 +21,11 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
                "Noto Sans KR", sans-serif;
   font-size: 17px;               /* 폰에서 편하게 읽히는 크기 */
+  line-height: 1.5;
+  letter-spacing: -0.01em;       /* 한글은 아주 살짝 좁혀야 정돈돼 보인다 */
   color: var(--text);
   background: var(--bg);
+  -webkit-font-smoothing: antialiased;
 }
 
 header {
@@ -32,7 +39,7 @@ header {
   background: var(--bg);
 }
 
-h1 { margin: 0; font-size: 20px; font-weight: 600; }
+h1 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
 
 .icon-btn {
   font-size: 22px;
@@ -45,10 +52,22 @@ main { padding: 8px 20px; }
 
 /* 날짜 구분 줄 */
 .day {
-  margin: 24px 0 8px;
-  font-size: 15px;
+  margin: 28px 0 4px;
+  font-size: 14px;
   color: var(--muted);
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+/* 오늘만 강조색 점을 붙인다 — 스크롤 중에 "지금"이 어디인지 바로 보인다 */
+.day.today { color: var(--accent); }
+.day.today::before {
+  content: '';
+  display: inline-block;
+  width: 6px; height: 6px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  vertical-align: 1px;
 }
 
 /* 예약 한 줄: 시각 / 이름 / 시술 */
@@ -61,7 +80,7 @@ main { padding: 8px 20px; }
   border-bottom: 1px solid var(--line);
 }
 
-.row .time { font-variant-numeric: tabular-nums; color: var(--text); }
+.row .time { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--text); }
 .row .end { display: block; font-size: 13px; color: var(--muted); margin-top: 2px; }
 .row .name { font-weight: 500; }
 .row .name a { color: inherit; text-decoration: none; }
@@ -98,11 +117,12 @@ main { padding: 8px 20px; }
 input, select, textarea {
   width: 100%;
   padding: 14px;
+  background: var(--surface);
   font-size: 17px;              /* 16px 미만이면 아이폰이 화면을 확대해버린다 */
   font-family: inherit;
   border: 1px solid var(--line);
   border-radius: 10px;
-  background: var(--bg);
+  background: var(--surface);
   color: var(--text);
 }
 
@@ -112,7 +132,7 @@ input, select, textarea {
   font-size: 22px;
   border: 1px solid var(--line);
   border-radius: 10px;
-  background: var(--bg);
+  background: var(--surface);
   color: var(--text);
 }
 .duration output { flex: 1; text-align: center; font-variant-numeric: tabular-nums; }
@@ -121,8 +141,8 @@ dialog {
   width: min(92vw, 420px);
   padding: 24px 20px;
   border: none;
-  border-radius: 16px;
-  background: var(--bg);
+  border-radius: 18px;
+  background: var(--surface);
   color: var(--text);
 }
 dialog::backdrop { background: rgba(0, 0, 0, 0.4); }
@@ -139,7 +159,7 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.4); }
   font-family: inherit;
   border-radius: 10px;
   border: 1px solid var(--line);
-  background: var(--bg);
+  background: var(--surface);
   color: var(--text);
 }
 .dialog-actions button[type="submit"] {
@@ -178,7 +198,7 @@ button.wide {
   font-family: inherit;
   border: 1px solid var(--line);
   border-radius: 10px;
-  background: var(--bg);
+  background: var(--surface);
   color: var(--text);
 }
 

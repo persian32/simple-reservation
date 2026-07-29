@@ -77,7 +77,7 @@ function render() {
     if (r.date !== currentDate) {
       currentDate = r.date
       const head = document.createElement('div')
-      head.className = 'day'
+      head.className = r.date === today ? 'day today' : 'day'
       head.textContent = dayLabel(r.date, today, tomorrow)
       list.append(head)
     }
