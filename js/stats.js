@@ -26,3 +26,19 @@ export function customerStats(visits) {
 
   return { count: dates.length, lastVisit: last, avgIntervalDays }
 }
+
+// 전체 예약에서 손님별 요약 목록을 만든다. 최근에 온 손님이 먼저 나온다.
+// 취소된 예약과 이름 없는 예약은 방문으로 세지 않는다.
+export function customerList(rows) {
+  const byName = new Map()
+  for (const r of rows) {
+    if (!r.customerName || r.status !== 'active') continue
+    const visits = byName.get(r.customerName) || []
+    visits.push(r)
+    byName.set(r.customerName, visits)
+  }
+
+  return [...byName.entries()]
+    .map(([name, visits]) => ({ name, ...customerStats(visits) }))
+    .sort((a, b) => b.lastVisit.localeCompare(a.lastVisit))
+}

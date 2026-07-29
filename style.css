@@ -179,3 +179,18 @@ button.wide {
   background: var(--bg);
   color: var(--text);
 }
+
+/* 손님 목록 한 줄 */
+.person {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+  text-decoration: none;
+  color: var(--text);
+}
+.person-name { font-weight: 500; }
+.person-meta { color: var(--muted); font-size: 15px; }
+
+.header-actions { display: flex; gap: 4px; }
