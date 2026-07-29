@@ -195,3 +195,21 @@ button.wide {
 .person-meta { color: var(--muted); font-size: 15px; }
 
 .header-actions { display: flex; gap: 4px; }
+
+/* 예약 동작 메뉴 */
+.action-target {
+  margin: 0 0 20px;
+  font-weight: 500;
+}
+.action-list { display: flex; flex-direction: column; gap: 10px; }
+.action-list button {
+  padding: 16px;
+  font-size: 17px;
+  font-family: inherit;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  text-align: center;
+}
+.action-list button[hidden] { display: none; }

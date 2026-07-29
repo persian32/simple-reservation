@@ -162,9 +162,18 @@ document.getElementById('addForm').addEventListener('submit', () => {
   }
 })
 
-// ── 예약 취소 / 삭제 ────────────────────────────────────
+// ── 예약 동작 메뉴 ──────────────────────────────────────
 
-// 예약 줄을 누르면 무엇을 할지 묻는다.
+const actionDialog = document.getElementById('actionDialog')
+const actionTarget = document.getElementById('actionTarget')
+const actCancel = document.getElementById('actCancel')
+const actRestore = document.getElementById('actRestore')
+const actDelete = document.getElementById('actDelete')
+
+// 지금 메뉴가 가리키는 예약 id
+let actionId = null
+
+// 예약 줄을 누르면 무엇을 할지 고르는 메뉴를 연다.
 // 이름 링크를 누른 경우는 손님 이력으로 가야 하므로 여기서 처리하지 않는다.
 document.getElementById('list').addEventListener('click', (e) => {
   if (e.target.closest('a')) return
@@ -172,25 +181,41 @@ document.getElementById('list').addEventListener('click', (e) => {
   const row = e.target.closest('.row')
   if (!row) return
 
-  const id = row.dataset.id
-  const target = store.list().find((r) => r.id === id)
+  const target = store.list().find((r) => r.id === row.dataset.id)
   if (!target) return
 
-  const label = `${target.time} ${target.customerName || ''} ${target.service}`.trim()
+  actionId = target.id
+  actionTarget.textContent =
+    `${target.time} ${target.customerName || ''} ${target.service}`.replace(/\s+/g, ' ').trim()
 
-  if (target.status === 'active') {
-    if (confirm(`${label}\n\n취소로 표시할까요?`)) {
-      store.cancel(id)
-      render()
-    }
-    return
-  }
+  // 상태에 따라 보여줄 버튼이 다르다
+  const cancelled = target.status === 'cancelled'
+  actCancel.hidden = cancelled
+  actRestore.hidden = !cancelled
 
-  // 이미 취소된 예약을 다시 누르면 완전히 지울지 묻는다
-  if (confirm(`${label}\n\n이 예약을 완전히 지울까요?`)) {
-    store.remove(id)
-    render()
-  }
+  actionDialog.showModal()
+})
+
+// 메뉴에서 고른 동작을 실행하고 목록을 다시 그린다
+function runAction(fn) {
+  if (actionId) fn(actionId)
+  actionId = null
+  actionDialog.close()
+  render()
+}
+
+actCancel.addEventListener('click', () => runAction((id) => store.cancel(id)))
+actRestore.addEventListener('click', () => runAction((id) => store.restore(id)))
+
+actDelete.addEventListener('click', () => {
+  // 삭제만 되돌릴 수 없으므로 한 번 더 묻는다
+  if (!confirm('이 예약을 완전히 지울까요? 되돌릴 수 없습니다.')) return
+  runAction((id) => store.remove(id))
+})
+
+document.getElementById('actClose').addEventListener('click', () => {
+  actionId = null
+  actionDialog.close()
 })
 
 // 서비스 워커 등록 — 오프라인 동작과 홈 화면 설치를 가능하게 한다
