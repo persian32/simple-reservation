@@ -97,9 +97,38 @@ function showDuration() {
   durationOut.textContent = `${durationMin}분`
 }
 
+// 시술 선택칸을 채운다. 맨 끝에 "새 시술 추가"를 붙인다 —
+// 시술을 고르다가 목록에 없는 걸 발견하는 곳이 바로 여기라서,
+// 설정 화면까지 두 번 이동하게 만들면 아무도 안 쓴다.
+const ADD_NEW = '__add_new__'
+
+function fillServices(selected) {
+  serviceSelect.textContent = ''
+  for (const s of services.list()) {
+    const option = document.createElement('option')
+    option.value = s.name
+    option.textContent = s.name
+    serviceSelect.append(option)
+  }
+  const addOption = document.createElement('option')
+  addOption.value = ADD_NEW
+  addOption.textContent = '+ 새 시술 추가…'
+  serviceSelect.append(addOption)
+
+  serviceSelect.value = selected && services.list().some((s) => s.name === selected)
+    ? selected
+    : services.list()[0].name
+}
+
 // 시술을 바꾸면 기본 시간이 자동으로 들어간다.
 // 언니가 이 칸에 손을 안 대고도 저장할 수 있어야 한다.
 serviceSelect.addEventListener('change', () => {
+  if (serviceSelect.value === ADD_NEW) {
+    const name = (prompt('새 시술 이름을 적어주세요\n(예: 세팅)') || '').trim()
+    // 지금 화면에 보이는 예상 시간을 그 시술의 기본값으로 삼는다
+    if (name) services.add(name, durationMin)
+    fillServices(name)
+  }
   durationMin = services.defaultMinutes(serviceSelect.value)
   showDuration()
 })
@@ -122,17 +151,8 @@ document.getElementById('addBtn').addEventListener('click', () => {
     `${String((now.getHours() + 1) % 24).padStart(2, '0')}:00`
 
   // 시술 목록을 새로 채운다 — 설정에서 추가·삭제한 것이 바로 반영되게
-  serviceSelect.textContent = ''
-  const serviceRows = services.list()
-  serviceSelect.append(...serviceRows.map((s) => {
-    const option = document.createElement('option')
-    option.value = s.name
-    option.textContent = s.name
-    return option
-  }))
-
-  serviceSelect.selectedIndex = 0
-  durationMin = services.defaultMinutes(serviceRows[0].name)
+  fillServices()
+  durationMin = services.defaultMinutes(serviceSelect.value)
   showDuration()
   document.getElementById('f-name').value = ''
 
