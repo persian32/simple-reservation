@@ -22,9 +22,9 @@ npm test
 - `js/store.js` 예약 저장·조회 (localStorage)
 - `js/stats.js` 손님 방문 이력 계산
 - `js/dates.js` 날짜 표시 형식 변환
-- `js/home.js` / `customer.js` / `settings.js` 각 화면 동작
+- `js/home.js` / `customer.js` / `customers.js` / `settings.js` 각 화면 동작
 
-앞의 네 파일은 순수 로직이고 `test/`에서 테스트한다. 뒤의 세 파일은 DOM만 다룬다.
+앞의 네 파일은 순수 로직이고 `test/`에서 테스트한다. 뒤의 네 파일은 DOM만 다룬다.
 
 ## 데이터
 

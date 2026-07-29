@@ -37,7 +37,7 @@ if (visits.length === 0) {
 // 요약 — 총 몇 번 왔고, 얼마 만에 한 번씩 오는지
 const stats = customerStats(visits)
 const lines = [`총 ${stats.count}회 방문`]
-if (stats.avgIntervalDays !== null) {
+if (stats.avgIntervalDays) {
   const weeks = Math.round(stats.avgIntervalDays / 7)
   lines.push(weeks >= 1 ? `평균 ${weeks}주마다 오심` : `평균 ${stats.avgIntervalDays}일마다 오심`)
 }
