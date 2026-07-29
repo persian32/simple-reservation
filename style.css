@@ -213,3 +213,34 @@ button.wide {
   text-align: center;
 }
 .action-list button[hidden] { display: none; }
+
+/* 시술 목록 관리 */
+.service-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.service-del {
+  padding: 8px 14px;
+  font-size: 15px;
+  font-family: inherit;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--muted);
+}
+.service-add { display: flex; gap: 8px; margin-top: 16px; }
+.service-add #s-name { flex: 1; }
+.service-add #s-min { width: 84px; }
+.service-add button {
+  padding: 0 18px;
+  font-size: 17px;
+  font-family: inherit;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  white-space: nowrap;
+}
