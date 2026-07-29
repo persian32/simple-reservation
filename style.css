@@ -231,16 +231,26 @@ button.wide {
   background: var(--bg);
   color: var(--muted);
 }
-.service-add { display: flex; gap: 8px; margin-top: 16px; }
-.service-add #s-name { flex: 1; }
-.service-add #s-min { width: 84px; }
-.service-add button {
-  padding: 0 18px;
-  font-size: 17px;
-  font-family: inherit;
+/* 새 시술 추가 — 목록의 마지막 줄처럼 보이지 않게 확실히 떼어놓는다 */
+.service-add {
+  margin-top: 28px;
+  padding: 20px;
   border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.add-title { margin: 0 0 14px; font-size: 15px; color: var(--muted); }
+.add-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+.add-row #s-min { width: 88px; }
+.add-row .unit { flex: 1; color: var(--muted); font-size: 15px; white-space: nowrap; }
+.service-add button {
+  height: 50px;                 /* 옆 입력칸과 높이를 맞춘다 */
+  padding: 0 20px;
+  font-size: 17px;
+  font-weight: 600;
+  font-family: inherit;
+  border: 1px solid var(--accent);
   border-radius: 10px;
-  background: var(--bg);
-  color: var(--text);
+  background: var(--accent);
+  color: #fff;
   white-space: nowrap;
 }

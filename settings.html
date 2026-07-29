@@ -21,10 +21,15 @@
         기본 시간은 예약마다 10분 단위로 조절할 수 있습니다.
       </p>
       <div id="serviceList"></div>
+
       <div class="service-add">
-        <input type="text" id="s-name" placeholder="시술 이름" autocomplete="off">
-        <input type="number" id="s-min" min="10" step="10" value="30" aria-label="기본 시간(분)">
-        <button type="button" id="s-add">추가</button>
+        <p class="add-title">새 시술 추가</p>
+        <input type="text" id="s-name" placeholder="예: 세팅" autocomplete="off">
+        <div class="add-row">
+          <input type="number" id="s-min" min="10" step="10" value="30" aria-label="기본 시간(분)">
+          <span class="unit">분쯤 걸림</span>
+          <button type="button" id="s-add">추가</button>
+        </div>
       </div>
     </div>
 
