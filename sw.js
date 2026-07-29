@@ -1,10 +1,10 @@
 // 앱 파일을 폰에 저장해두어 인터넷이 끊겨도 열리게 한다.
 // 파일을 고칠 때마다 CACHE 이름의 숫자를 올려야 새 버전이 반영된다.
-const CACHE = 'reservation-v9'
+const CACHE = 'reservation-v10'
 
 const FILES = [
   './', 'index.html', 'customer.html', 'customers.html', 'settings.html', 'style.css',
-  'js/services.js', 'js/store.js', 'js/stats.js', 'js/dates.js',
+  'js/services.js', 'js/store.js', 'js/stats.js', 'js/dates.js', 'js/calendar.js',
   'js/home.js', 'js/customer.js', 'js/customers.js', 'js/settings.js',
   'manifest.json', 'icon-192.png', 'icon-512.png',
 ]

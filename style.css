@@ -293,3 +293,74 @@ button.wide {
   text-decoration: none;
   padding: 6px 4px;
 }
+
+/* ── 월간 달력 ───────────────────────────────────────────
+   언니가 지금 쓰는 종이 달력과 같은 모양이라야 옮겨가기 쉽다.
+   칸에 예약 내용을 다 적지는 않는다 — 점으로 "여기 뭔가 있다"만 알리고,
+   자세한 건 아래 목록이 맡는다. 종이 달력도 같은 방식이다. */
+.cal {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 8px 20px 4px;
+}
+
+.cal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.cal-head span { font-size: 17px; font-weight: 700; letter-spacing: -0.02em; }
+.cal-head button {
+  width: 40px; height: 40px;
+  font-size: 22px;
+  font-family: inherit;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
+}
+
+.cal-week, .cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+.cal-week span {
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+  padding-bottom: 6px;
+}
+
+.cal-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  height: 44px;                 /* 손가락으로 누를 수 있는 최소 크기 */
+  padding: 5px 0 0;
+  font-family: inherit;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  border-radius: 10px;
+}
+.cal-num { font-size: 15px; font-variant-numeric: tabular-nums; }
+.cal-dots {
+  font-size: 15px;
+  line-height: 6px;
+  height: 6px;
+  color: var(--accent);
+  letter-spacing: 1px;
+}
+
+.cal-day.other .cal-num { color: var(--line); }   /* 지난달·다음달 */
+.cal-day.other .cal-dots { color: var(--line); }
+.cal-day.is-today .cal-num { font-weight: 700; color: var(--accent); }
+.cal-day.is-selected { background: var(--accent); }
+.cal-day.is-selected .cal-num { color: #fff; font-weight: 700; }
+.cal-day.is-selected .cal-dots { color: #fff; }
+
+/* 목록 머리줄에 건수를 오른쪽에 붙인다 */
+.day { display: flex; justify-content: space-between; align-items: baseline; }
+.day-count { font-weight: 500; }

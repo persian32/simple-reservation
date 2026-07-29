@@ -1,6 +1,7 @@
 import { createStore } from './store.js'
 import { todayISO, formatDay, endTime } from './dates.js'
 import { createServices } from './services.js'
+import { monthGrid, addMonths, countByDate } from './calendar.js'
 
 const store = createStore(localStorage)
 const services = createServices(localStorage)
@@ -49,41 +50,99 @@ function renderRow(r) {
   return el
 }
 
-// 전체 목록을 다시 그린다.
-// 오늘 이후만 보여준다 — 지나간 예약은 손님 이력 화면에서 본다.
-function render() {
+// ── 달력과 목록 ────────────────────────────────────────
+
+// 지금 보고 있는 날짜와 달. 앱을 열면 오늘이다.
+let selected = todayISO()
+let view = { year: Number(selected.slice(0, 4)), month: Number(selected.slice(5, 7)) }
+
+// 달력을 그린다. 날짜 밑 점이 그날 예약 건수다 —
+// 종이 달력에 글씨가 적혀 있는 것과 같은 신호.
+function renderCalendar() {
+  const today = todayISO()
+  const counts = countByDate(store.list())
+
+  document.getElementById('calTitle').textContent = `${view.year}년 ${view.month}월`
+
+  const grid = document.getElementById('calGrid')
+  grid.textContent = ''
+
+  for (const cell of monthGrid(view.year, view.month)) {
+    const btn = document.createElement('button')
+    btn.type = 'button'
+    btn.className = 'cal-day'
+    btn.dataset.date = cell.date
+    if (!cell.inMonth) btn.classList.add('other')
+    if (cell.date === today) btn.classList.add('is-today')
+    if (cell.date === selected) btn.classList.add('is-selected')
+
+    const num = document.createElement('span')
+    num.className = 'cal-num'
+    num.textContent = Number(cell.date.slice(8))
+    btn.append(num)
+
+    // 점은 최대 3개까지만. 그 이상은 눈으로 세지 않는다.
+    const n = counts.get(cell.date) || 0
+    const dots = document.createElement('span')
+    dots.className = 'cal-dots'
+    dots.textContent = n === 0 ? '' : '·'.repeat(Math.min(n, 3))
+    btn.append(dots)
+
+    grid.append(btn)
+  }
+}
+
+// 고른 날짜의 예약만 시간순으로 보여준다
+function renderList() {
   const today = todayISO()
   const tomorrow = todayISO(new Date(Date.now() + 86400000))
-
-  const upcoming = store
-    .list()
-    .filter((r) => r.date >= today)
-    .sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time))
+  const rows = store.byDate(selected)
 
   const list = document.getElementById('list')
   list.textContent = ''
 
-  if (upcoming.length === 0) {
+  const head = document.createElement('div')
+  head.className = selected === today ? 'day today' : 'day'
+  const label = document.createElement('span')
+  label.textContent = dayLabel(selected, today, tomorrow)
+  const count = document.createElement('span')
+  count.className = 'day-count'
+  count.textContent = rows.length ? `${rows.length}건` : ''
+  head.append(label, count)
+  list.append(head)
+
+  if (rows.length === 0) {
     const empty = document.createElement('p')
     empty.className = 'empty'
-    empty.textContent = '예약이 없습니다'
+    empty.textContent = '이 날은 예약이 없습니다'
     list.append(empty)
     return
   }
 
-  // 날짜가 바뀔 때마다 구분 줄을 넣는다
-  let currentDate = null
-  for (const r of upcoming) {
-    if (r.date !== currentDate) {
-      currentDate = r.date
-      const head = document.createElement('div')
-      head.className = r.date === today ? 'day today' : 'day'
-      head.textContent = dayLabel(r.date, today, tomorrow)
-      list.append(head)
-    }
-    list.append(renderRow(r))
-  }
+  for (const r of rows) list.append(renderRow(r))
 }
+
+function render() {
+  renderCalendar()
+  renderList()
+}
+
+// 날짜를 누르면 아래 목록이 그날로 바뀐다
+document.getElementById('calGrid').addEventListener('click', (e) => {
+  const btn = e.target.closest('.cal-day')
+  if (!btn) return
+  selected = btn.dataset.date
+  // 지난달·다음달 칸을 누르면 그 달로 넘어간다
+  view = { year: Number(selected.slice(0, 4)), month: Number(selected.slice(5, 7)) }
+  render()
+})
+
+function moveMonth(delta) {
+  view = addMonths(view.year, view.month, delta)
+  renderCalendar()
+}
+document.getElementById('prevMonth').addEventListener('click', () => moveMonth(-1))
+document.getElementById('nextMonth').addEventListener('click', () => moveMonth(1))
 
 render()
 
@@ -149,7 +208,8 @@ document.getElementById('f-plus').addEventListener('click', () => {
 // 폼을 열 때마다 오늘 날짜와 다음 정시로 초기화한다
 document.getElementById('addBtn').addEventListener('click', () => {
   const now = new Date()
-  document.getElementById('f-date').value = todayISO(now)
+  // 달력에서 고른 날짜로 채운다 — 그 날을 보고 있으니 거기에 넣으려는 것이다
+  document.getElementById('f-date').value = selected
   document.getElementById('f-time').value =
     `${String((now.getHours() + 1) % 24).padStart(2, '0')}:00`
 
@@ -182,11 +242,10 @@ document.getElementById('addForm').addEventListener('submit', () => {
     durationMin,
     customerName: document.getElementById('f-name').value.trim(),
   })
+  // 저장한 날짜로 옮겨 보여준다 — 넣은 것이 눈앞에 보여야 저장된 줄 안다
+  selected = saved.date
+  view = { year: Number(selected.slice(0, 4)), month: Number(selected.slice(5, 7)) }
   render()
-  // 지난 날짜는 홈 목록에서 걸러지므로, 저장이 안 된 줄 알고 다시 넣는 걸 막는다
-  if (saved.date < todayISO()) {
-    alert('저장했습니다. 지난 날짜라 목록에는 안 보이고 손님 이력에만 남습니다.')
-  }
 })
 
 // ── 예약 동작 메뉴 ──────────────────────────────────────
