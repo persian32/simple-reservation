@@ -131,6 +131,17 @@ document.getElementById('addBtn').addEventListener('click', () => {
   durationMin = defaultMinutes(SERVICES[0].name)
   showDuration()
   document.getElementById('f-name').value = ''
+
+  // 이미 있는 손님 이름을 제안한다 — 오타 하나로 이력이 쪼개지는 걸 막는다
+  const knownNames = document.getElementById('knownNames')
+  knownNames.textContent = ''
+  const names = [...new Set(store.list().map((r) => r.customerName).filter(Boolean))]
+  knownNames.append(...names.map((n) => {
+    const option = document.createElement('option')
+    option.value = n
+    return option
+  }))
+
   dialog.showModal()
 })
 
