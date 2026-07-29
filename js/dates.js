@@ -13,3 +13,12 @@ export function formatDay(iso) {
   const weekday = WEEKDAYS[new Date(y, m - 1, d).getDay()]
   return `${m}/${d} (${weekday})`
 }
+
+// 시작 시각과 소요 시간으로 끝나는 시각을 구한다. '10:20' + 90 → '11:50'
+// 자정을 넘기면 24시간으로 되돌린다(밤 늦은 예약은 없지만 숫자가 깨지지 않게).
+export function endTime(start, minutes) {
+  const [h, m] = start.split(':').map(Number)
+  const total = (h * 60 + m + minutes) % (24 * 60)
+  const pad = (n) => String(n).padStart(2, '0')
+  return `${pad(Math.floor(total / 60))}:${pad(total % 60)}`
+}

@@ -1,5 +1,5 @@
 import { createStore } from './store.js'
-import { todayISO, formatDay } from './dates.js'
+import { todayISO, formatDay, endTime } from './dates.js'
 import { createServices } from './services.js'
 
 const store = createStore(localStorage)
@@ -21,6 +21,14 @@ function renderRow(r) {
   const time = document.createElement('span')
   time.className = 'time'
   time.textContent = r.time
+  // 끝나는 시각까지 보여준다. 다음 예약을 언제 잡을 수 있는지가
+  // 종이 달력에는 없던 정보다 — 지금까지는 머릿속으로 계산해야 했다.
+  if (r.durationMin) {
+    const end = document.createElement('span')
+    end.className = 'end'
+    end.textContent = `~${endTime(r.time, r.durationMin)}`
+    time.append(end)
+  }
 
   const name = document.createElement('span')
   name.className = 'name'
@@ -76,11 +84,6 @@ function render() {
     list.append(renderRow(r))
   }
 }
-
-// 제목에 이번 달을 표시
-const nowDate = new Date()
-document.getElementById('monthTitle').textContent =
-  `${nowDate.getMonth() + 1}월 ${nowDate.getFullYear()}`
 
 render()
 

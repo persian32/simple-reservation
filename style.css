@@ -61,9 +61,10 @@ main { padding: 8px 20px; }
   border-bottom: 1px solid var(--line);
 }
 
-.row .time { font-variant-numeric: tabular-nums; color: var(--muted); }
+.row .time { font-variant-numeric: tabular-nums; color: var(--text); }
+.row .end { display: block; font-size: 13px; color: var(--muted); margin-top: 2px; }
 .row .name { font-weight: 500; }
-.row .name a { color: inherit; text-decoration: none; border-bottom: 1px solid var(--line); }
+.row .name a { color: inherit; text-decoration: none; }
 .row .service { color: var(--muted); font-size: 15px; }
 
 /* 취소된 예약 */
@@ -253,4 +254,13 @@ button.wide {
   background: var(--accent);
   color: #fff;
   white-space: nowrap;
+}
+
+/* 헤더의 글자 링크. ⚙ 아이콘이 무슨 뜻인지 몰라 설정을 못 찾는 일이 있었다.
+   아이콘 하나 아끼는 것보다 글자로 적어주는 편이 낫다. */
+.nav-link {
+  font-size: 16px;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 6px 4px;
 }
