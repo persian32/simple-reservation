@@ -95,5 +95,31 @@ export function createStore(storage, deps = {}) {
     exportJson() {
       return JSON.stringify(load(), null, 2)
     },
+
+    // 백업 파일 불러오기.
+    // 덮어쓰지 않고 합친다 — 이미 있는 id 는 건너뛰므로 같은 파일을 두 번 넣어도
+    // 예약이 두 배가 되지 않고, 데이터가 들어 있는 폰에 넣어도 기존 예약이 안 사라진다.
+    // 파일은 바깥에서 온 것이므로 모양을 확인하고 받는다.
+    importJson(text) {
+      const incoming = JSON.parse(text)
+      if (!Array.isArray(incoming)) throw new Error('예약 백업 파일이 아닙니다.')
+
+      const rows = load()
+      const known = new Set(rows.map((r) => r.id))
+      const added = incoming
+        .filter((r) => r && r.id && r.date && r.time && r.service && !known.has(r.id))
+        // 빠진 값은 add 와 똑같이 채운다. 특히 status 가 없으면 손님 이력이
+        // active 만 세기 때문에 불러온 예약이 이력에서 조용히 사라진다.
+        .map((r) => ({
+          ...r,
+          customerName: r.customerName || '',
+          durationMin: r.durationMin ?? 30,
+          status: r.status === 'cancelled' ? 'cancelled' : 'active',
+          source: r.source || 'manual',
+        }))
+
+      save(rows.concat(added))
+      return { added: added.length, skipped: incoming.length - added.length }
+    },
   }
 }

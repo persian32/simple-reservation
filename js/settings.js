@@ -4,7 +4,10 @@ import { createServices } from './services.js'
 const store = createStore(localStorage)
 
 // 저장된 예약이 몇 건인지 보여준다 — 백업이 비어 있지 않은지 눈으로 확인할 수 있게
-document.getElementById('count').textContent = `현재 ${store.list().length}건이 저장되어 있습니다.`
+function renderCount() {
+  document.getElementById('count').textContent = `현재 ${store.list().length}건이 저장되어 있습니다.`
+}
+renderCount()
 
 // 예약 전체를 JSON 파일로 내려받는다.
 // 브라우저에 임시 주소를 만들어 가짜 링크를 누르는 방식 — 서버 없이 파일을 만드는 표준 방법이다.
@@ -19,6 +22,24 @@ document.getElementById('exportBtn').addEventListener('click', () => {
   a.click()
 
   URL.revokeObjectURL(url)   // 다 쓴 임시 주소는 바로 정리한다
+})
+
+// 백업 파일 불러오기. 파일을 고르는 순간 바로 읽는다.
+document.getElementById('importFile').addEventListener('change', async (e) => {
+  const file = e.target.files[0]
+  if (!file) return
+
+  try {
+    const { added, skipped } = store.importJson(await file.text())
+    alert(added === 0
+      ? `새로 들어온 예약이 없습니다. (이미 있는 예약 ${skipped}건)`
+      : `예약 ${added}건을 불러왔습니다.${skipped ? ` (이미 있던 ${skipped}건은 건너뜀)` : ''}`)
+    renderCount()
+  } catch {
+    alert('이 파일은 읽을 수 없습니다. 앱에서 내려받은 백업 파일인지 확인해주세요.')
+  }
+
+  e.target.value = ''   // 같은 파일을 다시 고를 수 있게 비운다
 })
 
 // ── 시술 목록 관리 ──────────────────────────────────────

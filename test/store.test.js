@@ -159,3 +159,59 @@ test('없는 예약을 고치려 하면 null 을 돌려준다', () => {
   const store = makeStore()
   assert.equal(store.update('없는id', { time: '11:00' }), null)
 })
+
+// ── 백업 불러오기 ──────────────────────────────────────
+
+test('백업 파일을 불러오면 예약이 되살아난다', () => {
+  const old = makeStore()
+  old.add({ date: '2026-03-17', time: '10:20', customerName: '화선언니', service: '염색' })
+  const backup = old.exportJson()
+
+  // 새 폰 — 비어 있는 저장소
+  const fresh = makeStore()
+  assert.deepEqual(fresh.importJson(backup), { added: 1, skipped: 0 })
+  assert.equal(fresh.byCustomer('화선언니').length, 1)
+})
+
+test('같은 파일을 두 번 불러도 예약이 두 배가 되지 않는다', () => {
+  const store = makeStore()
+  store.add({ date: '2026-03-17', time: '10:20', customerName: '화선언니', service: '염색' })
+  const backup = store.exportJson()
+
+  store.importJson(backup)
+  assert.deepEqual(store.importJson(backup), { added: 0, skipped: 1 })
+  assert.equal(store.list().length, 1)
+})
+
+test('불러오기는 이미 있는 예약을 지우지 않는다', () => {
+  // 실제 id 는 crypto.randomUUID() 라 폰이 달라도 겹치지 않는다
+  const backup = JSON.stringify([
+    { id: 'uuid-옛폰', date: '2026-03-17', time: '10:20', customerName: '화선언니', service: '염색' },
+  ])
+
+  const store = makeStore()
+  store.add({ date: '2026-04-01', time: '14:00', customerName: '박선주', service: '펌' })
+  store.importJson(backup)
+
+  assert.equal(store.list().length, 2)
+  assert.equal(store.byCustomer('박선주').length, 1)   // 원래 있던 것이 남아 있다
+  assert.equal(store.byCustomer('화선언니').length, 1) // 불러온 것도 들어왔다
+})
+
+test('예약 파일이 아니면 거부한다', () => {
+  const store = makeStore()
+  assert.throws(() => store.importJson('{"a":1}'), /백업 파일이 아닙니다/)
+  assert.throws(() => store.importJson('그냥 글자'))       // JSON 자체가 아님
+  assert.equal(store.list().length, 0)                    // 아무것도 안 들어갔다
+})
+
+test('모양이 깨진 줄은 건너뛴다', () => {
+  const store = makeStore()
+  const 반쪽 = JSON.stringify([
+    { id: 'x1', date: '2026-03-17', time: '10:20', service: '염색' },
+    { id: 'x2', date: '2026-03-18' },                     // 시각·시술 없음
+    null,
+  ])
+
+  assert.deepEqual(store.importJson(반쪽), { added: 1, skipped: 2 })
+})
