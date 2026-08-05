@@ -10,13 +10,19 @@ function daysBetween(fromDate, toDate) {
 
 // 한 손님의 방문 기록에서 요약을 뽑는다.
 // visits: [{ date: 'YYYY-MM-DD', ... }] — 순서는 상관없다.
-export function customerStats(visits) {
-  if (visits.length === 0) {
+// today: 주면 아직 오지 않은 예약을 방문으로 세지 않는다.
+//   안 주면 전부 센다 — 손님 이력 화면은 다가올 예약도 줄로 보여주므로 그쪽은 그대로 둔다.
+export function customerStats(visits, today) {
+  // 날짜만 뽑아 오래된 순으로 정렬
+  const dates = visits
+    .map((v) => v.date)
+    .filter((d) => !today || d <= today)
+    .sort()
+
+  if (dates.length === 0) {
     return { count: 0, lastVisit: null, avgIntervalDays: null }
   }
 
-  // 날짜만 뽑아 오래된 순으로 정렬
-  const dates = visits.map((v) => v.date).sort()
   const first = dates[0]
   const last = dates[dates.length - 1]
 
@@ -27,9 +33,9 @@ export function customerStats(visits) {
   return { count: dates.length, lastVisit: last, avgIntervalDays }
 }
 
-// 전체 예약에서 손님별 요약 목록을 만든다. 최근에 온 손님이 먼저 나온다.
+// 전체 예약에서 손님별 요약 목록을 만든다. 날짜가 늦은 손님이 먼저 나온다.
 // 취소된 예약과 이름 없는 예약은 방문으로 세지 않는다.
-export function customerList(rows) {
+export function customerList(rows, today) {
   const byName = new Map()
   for (const r of rows) {
     if (!r.customerName || r.status !== 'active') continue
@@ -39,6 +45,17 @@ export function customerList(rows) {
   }
 
   return [...byName.entries()]
-    .map(([name, visits]) => ({ name, ...customerStats(visits) }))
-    .sort((a, b) => b.lastVisit.localeCompare(a.lastVisit))
+    .map(([name, visits]) => {
+      const dates = visits.map((v) => v.date).sort()
+      return {
+        name,
+        ...customerStats(visits, today),
+        // 아직 오지 않은 예약 중 가장 이른 것. 지난 방문과 섞어서 '마지막' 이라고
+        // 쓰면 8/14 예약이 마지막 방문으로 보인다 — 그래서 따로 뽑는다.
+        nextVisit: dates.find((d) => d > today) || null,
+        // 정렬용. 과거·미래를 가리지 않은 가장 늦은 날짜 — 예전과 같은 순서를 유지한다.
+        latestDate: dates[dates.length - 1],
+      }
+    })
+    .sort((a, b) => b.latestDate.localeCompare(a.latestDate))
 }

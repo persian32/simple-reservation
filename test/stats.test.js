@@ -103,3 +103,66 @@ test('모든 예약이 취소된 손님은 목록에 안 나온다', () => {
   ])
   assert.deepEqual(list, [])
 })
+
+// ── 다가올 예약과 지난 방문 구분 ──────────────────────────
+
+test('오늘 이후 예약은 다음 예약으로 따로 나온다', () => {
+  const list = customerList([
+    { customerName: '재민이', date: '2026-08-14', status: 'active' },
+  ], '2026-08-05')
+  assert.equal(list[0].nextVisit, '2026-08-14')
+  assert.equal(list[0].count, 0)          // 아직 안 왔으므로 방문 0회
+  assert.equal(list[0].lastVisit, null)
+})
+
+test('오늘 예약은 방문으로 센다', () => {
+  // 오늘 10시 예약인지 5시 예약인지 날짜만으로는 못 가른다. 온 것으로 친다.
+  const list = customerList([
+    { customerName: '박민혜', date: '2026-08-05', status: 'active' },
+  ], '2026-08-05')
+  assert.equal(list[0].count, 1)
+  assert.equal(list[0].nextVisit, null)
+})
+
+test('지난 방문과 다가올 예약이 같이 있으면 둘 다 나온다', () => {
+  const list = customerList([
+    { customerName: '정화선', date: '2026-07-02', status: 'active' },
+    { customerName: '정화선', date: '2026-08-14', status: 'active' },
+  ], '2026-08-05')
+  assert.equal(list[0].count, 1)              // 지난 방문만
+  assert.equal(list[0].lastVisit, '2026-07-02')
+  assert.equal(list[0].nextVisit, '2026-08-14')
+})
+
+test('다가올 예약이 여럿이면 가장 이른 것이 다음 예약', () => {
+  const list = customerList([
+    { customerName: '정화선', date: '2026-08-20', status: 'active' },
+    { customerName: '정화선', date: '2026-08-08', status: 'active' },
+  ], '2026-08-05')
+  assert.equal(list[0].nextVisit, '2026-08-08')
+})
+
+test('정렬은 예전 그대로 — 가장 늦은 날짜가 위로', () => {
+  const list = customerList([
+    { customerName: '정화선', date: '2026-07-02', status: 'active' },
+    { customerName: '재민이', date: '2026-08-14', status: 'active' },
+  ], '2026-08-05')
+  assert.deepEqual(list.map((c) => c.name), ['재민이', '정화선'])
+})
+
+test('오늘을 안 넘기면 예전처럼 전부 센다', () => {
+  // 손님 이력 화면은 다가올 예약도 줄로 보여주므로 그대로 둔다
+  const s = customerStats([{ date: '2026-08-14' }])
+  assert.equal(s.count, 1)
+  assert.equal(s.lastVisit, '2026-08-14')
+})
+
+test('평균 주기에 다가올 예약은 안 섞인다', () => {
+  // 1/20 → 3/17 은 56일. 8/14 예약이 섞이면 값이 늘어난다
+  const s = customerStats(
+    [{ date: '2026-01-20' }, { date: '2026-03-17' }, { date: '2026-08-14' }],
+    '2026-08-05'
+  )
+  assert.equal(s.count, 2)
+  assert.equal(s.avgIntervalDays, 56)
+})

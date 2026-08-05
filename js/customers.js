@@ -1,11 +1,11 @@
 import { createStore } from './store.js'
 import { customerList } from './stats.js'
-import { formatDay } from './dates.js'
+import { formatDay, todayISO } from './dates.js'
 
 const store = createStore(localStorage)
 
 const list = document.getElementById('list')
-const customers = customerList(store.list())
+const customers = customerList(store.list(), todayISO())
 
 if (customers.length === 0) {
   const empty = document.createElement('p')
@@ -22,9 +22,13 @@ if (customers.length === 0) {
     name.className = 'person-name'
     name.textContent = c.name
 
+    // 아직 안 온 예약이 있으면 '예약 8/14', 없으면 '3회 · 8/1'.
+    // 미래 날짜에 '마지막' 을 붙이면 다음 예약이 마지막 방문처럼 읽힌다.
     const meta = document.createElement('span')
     meta.className = 'person-meta'
-    meta.textContent = `${c.count}회 · 마지막 ${formatDay(c.lastVisit)}`
+    meta.textContent = c.nextVisit
+      ? [c.count && `${c.count}회`, `예약 ${formatDay(c.nextVisit)}`].filter(Boolean).join(' · ')
+      : `${c.count}회 · ${formatDay(c.lastVisit)}`
 
     row.append(name, meta)
     list.append(row)
