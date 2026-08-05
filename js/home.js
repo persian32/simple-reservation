@@ -229,6 +229,7 @@ function openForm(row) {
   durationMin = row ? row.durationMin : services.defaultMinutes(serviceSelect.value)
   showDuration()
   document.getElementById('f-name').value = row ? row.customerName : ''
+  document.getElementById('f-price').value = row && row.price != null ? row.price : ''
   document.getElementById('f-save').textContent = row ? '고치기' : '저장'
 
   // 이미 있는 손님 이름을 제안한다 — 오타 하나로 이력이 쪼개지는 걸 막는다
@@ -249,12 +250,15 @@ document.getElementById('addBtn').addEventListener('click', () => openForm(null)
 document.getElementById('f-cancel').addEventListener('click', () => dialog.close())
 
 document.getElementById('addForm').addEventListener('submit', () => {
+  // 비워두면 null. 0원을 받는 경우는 없으므로 빈칸과 0을 굳이 구분하지 않는다.
+  const priceRaw = Number(document.getElementById('f-price').value)
   const input = {
     date: document.getElementById('f-date').value,
     time: document.getElementById('f-time').value,
     service: serviceSelect.value,
     durationMin,
     customerName: document.getElementById('f-name').value.trim(),
+    price: priceRaw > 0 ? priceRaw : null,
   }
   // 고치는 중이면 같은 예약을 갱신한다. 지우고 새로 넣으면
   // 손님 이력에 방문이 하나 더 생겨 숫자가 틀어진다.

@@ -30,6 +30,9 @@ export function createStore(storage, deps = {}) {
         service: input.service,
         // 화면이 항상 값을 넘긴다. 이 30분은 값이 빠진 경우의 마지막 안전망이다.
         durationMin: input.durationMin ?? 30,
+        // 금액은 선택. 예약을 잡는 시점엔 모를 수 있어 비워두고
+        // 시술이 끝난 뒤 '시간·내용 바꾸기' 로 채우는 길도 열어둔다.
+        price: input.price ?? null,
         status: 'active',
         source: input.source || 'manual',
         createdAt: stamp,
@@ -114,6 +117,7 @@ export function createStore(storage, deps = {}) {
           ...r,
           customerName: r.customerName || '',
           durationMin: r.durationMin ?? 30,
+          price: r.price ?? null,
           status: r.status === 'cancelled' ? 'cancelled' : 'active',
           source: r.source || 'manual',
         }))

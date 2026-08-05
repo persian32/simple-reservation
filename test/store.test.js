@@ -215,3 +215,34 @@ test('모양이 깨진 줄은 건너뛴다', () => {
 
   assert.deepEqual(store.importJson(반쪽), { added: 1, skipped: 2 })
 })
+
+// ── 금액 ────────────────────────────────────────────────
+
+test('금액을 넣으면 그대로 저장된다', () => {
+  const store = makeStore()
+  const row = store.add({ date: '2026-08-01', time: '10:00', service: '펌', price: 80000 })
+  assert.equal(row.price, 80000)
+})
+
+test('금액을 안 넣으면 null 이다', () => {
+  // 예약을 잡는 시점엔 금액을 모를 수 있다. 0 이 아니라 null 이어야
+  // 손님 이력에서 '0원' 으로 잘못 보이지 않는다.
+  const store = makeStore()
+  assert.equal(store.add({ date: '2026-08-01', time: '10:00', service: '펌' }).price, null)
+})
+
+test('시술이 끝난 뒤 금액만 채워 넣을 수 있다', () => {
+  const store = makeStore()
+  const row = store.add({ date: '2026-08-01', time: '10:00', service: '펌' })
+  store.update(row.id, { price: 80000 })
+  assert.equal(store.list()[0].price, 80000)
+})
+
+test('금액 없이 만든 옛 백업을 불러와도 모양이 같다', () => {
+  const store = makeStore()
+  const { added } = store.importJson(JSON.stringify([
+    { id: 'old1', date: '2026-07-02', time: '10:00', service: '염색' },
+  ]))
+  assert.equal(added, 1)
+  assert.equal(store.list()[0].price, null)
+})
