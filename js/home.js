@@ -6,12 +6,13 @@ import { monthGrid, addMonths, countByDate } from './calendar.js'
 const store = createStore(localStorage)
 const services = createServices(localStorage)
 
-// 예약 폼을 열 때 미리 채워두는 시각. 가게 오픈 시각으로 고정한다.
+// 예약 폼을 열 때 미리 채워두는 시각. 항상 오전으로 둔다.
 // "지금+1시간" 으로 했더니 11시 넘어 폼을 열면 12:00 이 들어가고,
 // 갤럭시 시계창이 '오후' 가 선택된 채로 열려서 시계판의 10 을 누르면
 // 오전 10시가 아니라 오후 10시(22:00)로 저장됐다.
-// 오픈 시각이 바뀌면 이 한 줄만 고치면 된다.
-const OPEN_TIME = '10:00'
+// 비워두면 시계창이 '지금 시각'으로 열려 같은 문제가 되돌아오므로 값은 넣어야 한다.
+// 시각 자체는 어차피 대부분 바꾸니, 가장 흔한 오전 10시로 둔다. (영업 시간과는 무관)
+const DEFAULT_TIME = '10:00'
 
 // 오늘·내일에는 이름을 붙여 눈에 띄게 한다
 function dayLabel(iso, today, tomorrow) {
@@ -221,7 +222,7 @@ function openForm(row) {
 
   // 달력에서 고른 날짜로 채운다 — 그 날을 보고 있으니 거기에 넣으려는 것이다
   document.getElementById('f-date').value = row ? row.date : selected
-  document.getElementById('f-time').value = row ? row.time : OPEN_TIME
+  document.getElementById('f-time').value = row ? row.time : DEFAULT_TIME
 
   // 시술 목록을 새로 채운다 — 설정에서 추가·삭제한 것이 바로 반영되게
   fillServices(row ? row.service : undefined)
