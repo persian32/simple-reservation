@@ -105,3 +105,30 @@ test('같은 이름을 다시 넣으면 그 이름을 돌려준다', () => {
   assert.equal(services.add('염색', 60), '염색')
   assert.equal(services.list().length, 7)
 })
+
+test('시술을 한 칸 위로 올린다', () => {
+  const services = createServices(fakeStorage())
+  // 기본 목록: 남자커트, 펌, 여자커트, ...
+  assert.equal(services.moveUp('여자커트'), true)
+  assert.deepEqual(services.list().slice(0, 3).map((s) => s.name), ['남자커트', '여자커트', '펌'])
+})
+
+test('맨 위 시술은 더 올라가지 않는다', () => {
+  const services = createServices(fakeStorage())
+  assert.equal(services.moveUp('남자커트'), false)
+  assert.equal(services.list()[0].name, '남자커트')
+})
+
+test('없는 시술을 올리려 하면 아무 일도 없다', () => {
+  const services = createServices(fakeStorage())
+  assert.equal(services.moveUp('없는시술'), false)
+  assert.equal(services.list().length, 7)
+})
+
+test('여러 번 올리면 맨 위까지 간다', () => {
+  // 언니가 매직셋팅 같은 걸 나중에 추가해도 위로 끌어올릴 수 있어야 한다
+  const services = createServices(fakeStorage())
+  services.add('매직셋팅', 180)
+  for (let i = 0; i < 7; i++) services.moveUp('매직셋팅')
+  assert.equal(services.list()[0].name, '매직셋팅')
+})

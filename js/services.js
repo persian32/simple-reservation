@@ -54,6 +54,18 @@ export function createServices(storage) {
       return resolveIn(load(), name)
     },
 
+    // 순서를 한 칸 위로. 맨 위이거나 없는 이름이면 false.
+    // 예약 폼 드롭다운이 이 순서를 그대로 쓰고 맨 위 항목이 기본 선택값이 되므로,
+    // 자주 하는 시술을 위로 올리면 고르는 손이 줄어든다.
+    moveUp(name) {
+      const rows = load()
+      const i = rows.findIndex((s) => s.name === name)
+      if (i <= 0) return false
+      ;[rows[i - 1], rows[i]] = [rows[i], rows[i - 1]]
+      save(rows)
+      return true
+    },
+
     // 삭제에 성공하면 true. 목록이 비면 예약을 못 넣게 되므로 마지막 하나는 남긴다.
     remove(name) {
       const rows = load()

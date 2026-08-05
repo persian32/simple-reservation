@@ -49,12 +49,31 @@ const serviceList = document.getElementById('serviceList')
 
 function renderServices() {
   serviceList.textContent = ''
-  for (const s of services.list()) {
+  for (const [i, s] of services.list().entries()) {
     const row = document.createElement('div')
     row.className = 'service-row'
 
     const label = document.createElement('span')
     label.textContent = `${s.name}  ${s.defaultMin}분`
+
+    const actions = document.createElement('span')
+    actions.className = 'service-actions'
+
+    // 맨 위 줄에는 올릴 곳이 없으므로 안 그린다.
+    // 아래로 내리려면 그 아래 줄의 ↑ 를 누르면 되므로 버튼은 하나면 된다 —
+    // 좁은 폰 화면에 ↑↓ 를 둘 다 두면 '지우기' 와 함께 세 개가 몰린다.
+    if (i > 0) {
+      const up = document.createElement('button')
+      up.type = 'button'
+      up.className = 'service-up'
+      up.textContent = '↑'
+      up.setAttribute('aria-label', `${s.name} 위로 올리기`)
+      up.addEventListener('click', () => {
+        services.moveUp(s.name)
+        renderServices()
+      })
+      actions.append(up)
+    }
 
     const del = document.createElement('button')
     del.type = 'button'
@@ -69,7 +88,8 @@ function renderServices() {
       renderServices()
     })
 
-    row.append(label, del)
+    actions.append(del)
+    row.append(label, actions)
     serviceList.append(row)
   }
 }
