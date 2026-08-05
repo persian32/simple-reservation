@@ -20,7 +20,7 @@
 js/services.js   시술 목록·별칭          ┐
 js/store.js      예약 저장·조회·수정      │ 순수 로직
 js/stats.js      손님 이력 계산           │ 저장소를 주입받아 DOM과 분리
-js/dates.js      날짜 형식·종료 시각      │ → node --test 로 검증 (73개)
+js/dates.js      날짜 형식·종료 시각      │ → node --test 로 검증 (78개)
 js/calendar.js   월간 격자                ┘
 
 js/home.js       홈(달력+목록+폼+메뉴)    ┐
@@ -140,14 +140,14 @@ self.addEventListener('install', (e) => {
 ## 테스트
 
 ```bash
-npm test    # 73개
+npm test    # 78개
 ```
 
 | 파일 | 개수 |
 |---|---|
 | `test/services.test.js` | 18 |
 | `test/store.test.js` | 24 |
-| `test/stats.test.js` | 19 |
+| `test/stats.test.js` | 24 |
 | `test/calendar.test.js` | 9 |
 | `test/dates.test.js` | 3 |
 
