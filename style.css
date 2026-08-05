@@ -200,11 +200,16 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.4); }
 
 .hint { color: var(--muted); font-size: 15px; line-height: 1.7; margin: 8px 0 16px; }
 
-button.wide {
+/* label 도 쓴다 — 파일 고르기 칸은 브라우저 기본 모양이 영어("Choose File")라
+   숨기고 label 을 버튼처럼 보이게 한다 */
+.wide {
+  display: block;
   width: 100%;
+  box-sizing: border-box;
   padding: 16px;
   font-size: 17px;
   font-family: inherit;
+  text-align: center;
   border: 1px solid var(--line);
   border-radius: 10px;
   background: var(--surface);
