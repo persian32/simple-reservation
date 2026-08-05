@@ -217,18 +217,41 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.4); }
   color: var(--text);
 }
 
-/* 손님 목록 한 줄 */
+/* 손님 이름 검색 */
+.search {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 4px 0 8px;
+  padding: 12px 14px;
+  font-size: 17px;
+  font-family: inherit;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+/* 손님 목록 한 줄 — 위: 이름·회차, 아래: 마지막 방문 */
 .person {
   display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  padding: 16px 0;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 0;
   border-bottom: 1px solid var(--line);
   text-decoration: none;
   color: var(--text);
 }
+/* 검색으로 감출 때 쓴다. display:flex 가 브라우저 기본 [hidden] 을 이기므로 따로 적어야 한다 */
+.person[hidden] { display: none; }
+.person-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
 .person-name { font-weight: 500; }
-.person-meta { color: var(--muted); font-size: 15px; }
+.person-meta { color: var(--muted); font-size: 15px; white-space: nowrap; }
+.person-last { color: var(--muted); font-size: 15px; }
 
 .header-actions { display: flex; gap: 4px; }
 

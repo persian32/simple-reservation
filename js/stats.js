@@ -47,9 +47,16 @@ export function customerList(rows, today) {
   return [...byName.entries()]
     .map(([name, visits]) => {
       const dates = visits.map((v) => v.date).sort()
+      // 지난 방문 중 가장 늦은 줄. 날짜만으로는 같은 날 두 건을 못 가르므로 시각까지 본다.
+      const past = visits
+        .filter((v) => !today || v.date <= today)
+        .sort((a, b) => a.date.localeCompare(b.date) || (a.time || '').localeCompare(b.time || ''))
       return {
         name,
         ...customerStats(visits, today),
+        // 마지막으로 무슨 시술을 했는지. 이름을 눌러 이력에 들어가지 않아도
+        // 목록에서 바로 보이게 하려고 같이 들고 나온다.
+        lastService: past.length ? past[past.length - 1].service : null,
         // 아직 오지 않은 예약 중 가장 이른 것. 지난 방문과 섞어서 '마지막' 이라고
         // 쓰면 8/14 예약이 마지막 방문으로 보인다 — 그래서 따로 뽑는다.
         nextVisit: dates.find((d) => d > today) || null,

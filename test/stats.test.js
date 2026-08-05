@@ -166,3 +166,46 @@ test('평균 주기에 다가올 예약은 안 섞인다', () => {
   assert.equal(s.count, 2)
   assert.equal(s.avgIntervalDays, 56)
 })
+
+// ── 목록에 보여줄 마지막 시술 ────────────────────────────
+
+test('마지막으로 다녀간 날의 시술이 나온다', () => {
+  const list = customerList([
+    { customerName: '정화선', date: '2026-01-20', time: '10:00', service: '펌', status: 'active' },
+    { customerName: '정화선', date: '2026-03-17', time: '10:00', service: '염색', status: 'active' },
+  ], '2026-08-05')
+  assert.equal(list[0].lastVisit, '2026-03-17')
+  assert.equal(list[0].lastService, '염색')
+})
+
+test('다가올 예약의 시술은 최근 시술이 아니다', () => {
+  // 8/20 매직셋팅은 아직 안 한 것. 이걸 보여주면 한 것처럼 읽힌다
+  const list = customerList([
+    { customerName: '정화선', date: '2026-08-01', time: '10:00', service: '염색', status: 'active' },
+    { customerName: '정화선', date: '2026-08-20', time: '10:00', service: '매직셋팅', status: 'active' },
+  ], '2026-08-05')
+  assert.equal(list[0].lastService, '염색')
+})
+
+test('같은 날 두 건이면 늦은 시각의 시술', () => {
+  const list = customerList([
+    { customerName: '정화선', date: '2026-08-01', time: '15:00', service: '펌', status: 'active' },
+    { customerName: '정화선', date: '2026-08-01', time: '10:00', service: '남자커트', status: 'active' },
+  ], '2026-08-05')
+  assert.equal(list[0].lastService, '펌')
+})
+
+test('아직 안 온 손님은 보여줄 시술이 없다', () => {
+  const list = customerList([
+    { customerName: '재민이', date: '2026-08-14', time: '10:00', service: '펌', status: 'active' },
+  ], '2026-08-05')
+  assert.equal(list[0].lastService, null)
+})
+
+test('취소된 예약의 시술은 안 나온다', () => {
+  const list = customerList([
+    { customerName: '정화선', date: '2026-03-17', time: '10:00', service: '염색', status: 'cancelled' },
+    { customerName: '정화선', date: '2026-01-20', time: '10:00', service: '펌', status: 'active' },
+  ], '2026-08-05')
+  assert.equal(list[0].lastService, '펌')
+})
