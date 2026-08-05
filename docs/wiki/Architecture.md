@@ -20,7 +20,7 @@
 js/services.js   시술 목록·별칭          ┐
 js/store.js      예약 저장·조회·수정      │ 순수 로직
 js/stats.js      손님 이력 계산           │ 저장소를 주입받아 DOM과 분리
-js/dates.js      날짜 형식·종료 시각      │ → node --test 로 검증 (53개)
+js/dates.js      날짜 형식·종료 시각      │ → node --test 로 검증 (73개)
 js/calendar.js   월간 격자                ┘
 
 js/home.js       홈(달력+목록+폼+메뉴)    ┐
@@ -60,6 +60,7 @@ id 생성기와 시계도 주입한다. 그래야 테스트 결과가 매번 같
 | `date` / `time` | `'2026-07-29'` / `'10:20'` — **문자열.** `Date` 객체를 저장하지 않는다(직렬화 문제와 시간대 함정을 피한다) |
 | `customerName` | 없을 수 있다 |
 | `service` / `durationMin` | 시술명 문자열 / 분 |
+| `price` | 원 단위 숫자. 선택 입력이라 `null` 인 줄이 많다 |
 | `status` | `active` \| `cancelled` |
 | `source` | `manual` \| `photo` — 2단계에서 덮어쓰기 규칙에 쓴다 |
 | `createdAt` / `updatedAt` | ISO 문자열 |
@@ -139,14 +140,14 @@ self.addEventListener('install', (e) => {
 ## 테스트
 
 ```bash
-npm test    # 53개
+npm test    # 73개
 ```
 
 | 파일 | 개수 |
 |---|---|
-| `test/services.test.js` | 14 |
-| `test/store.test.js` | 15 |
-| `test/stats.test.js` | 12 |
+| `test/services.test.js` | 18 |
+| `test/store.test.js` | 24 |
+| `test/stats.test.js` | 19 |
 | `test/calendar.test.js` | 9 |
 | `test/dates.test.js` | 3 |
 
