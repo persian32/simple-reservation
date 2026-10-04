@@ -1,5 +1,5 @@
 import { createStore } from './store.js'
-import { todayISO, formatDay, endTime } from './dates.js'
+import { todayISO, formatDay } from './dates.js'
 import { createServices } from './services.js'
 import { monthGrid, addMonths, countByDate } from './calendar.js'
 
@@ -30,14 +30,6 @@ function renderRow(r) {
   const time = document.createElement('span')
   time.className = 'time'
   time.textContent = r.time
-  // 끝나는 시각까지 보여준다. 다음 예약을 언제 잡을 수 있는지가
-  // 종이 달력에는 없던 정보다 — 지금까지는 머릿속으로 계산해야 했다.
-  if (r.durationMin) {
-    const end = document.createElement('span')
-    end.className = 'end'
-    end.textContent = `~${endTime(r.time, r.durationMin)}`
-    time.append(end)
-  }
 
   const name = document.createElement('span')
   name.className = 'name'
@@ -55,6 +47,14 @@ function renderRow(r) {
   service.textContent = r.service
 
   el.append(time, name, service)
+
+  // 메모는 있을 때만 이름 아래 한 줄로
+  if (r.memo) {
+    const memo = document.createElement('span')
+    memo.className = 'memo'
+    memo.textContent = r.memo
+    el.append(memo)
+  }
   return el
 }
 
@@ -158,14 +158,6 @@ render()
 
 const dialog = document.getElementById('addDialog')
 const serviceSelect = document.getElementById('f-service')
-const durationOut = document.getElementById('f-duration')
-
-// 현재 표시 중인 소요 시간(분)
-let durationMin = 30
-
-function showDuration() {
-  durationOut.textContent = `${durationMin}분`
-}
 
 // 시술 선택칸을 채운다. 맨 끝에 "새 시술 추가"를 붙인다 —
 // 시술을 고르다가 목록에 없는 걸 발견하는 곳이 바로 여기라서,
@@ -190,27 +182,13 @@ function fillServices(selected) {
     : services.list()[0].name
 }
 
-// 시술을 바꾸면 기본 시간이 자동으로 들어간다.
-// 언니가 이 칸에 손을 안 대고도 저장할 수 있어야 한다.
+// 소요 시간 칸은 뺐다 — 언니가 한 달 써보고 "필요 없다"고 했다.
+// 예약에 남아 있는 durationMin 값은 지우지 않고 그대로 둔다.
 serviceSelect.addEventListener('change', () => {
-  if (serviceSelect.value === ADD_NEW) {
-    const name = (prompt('새 시술 이름을 적어주세요\n(예: 세팅)') || '').trim()
-    // 지금 화면에 보이는 예상 시간을 그 시술의 기본값으로 삼는다
-    if (name) services.add(name, durationMin)
-    fillServices(name)
-  }
-  durationMin = services.defaultMinutes(serviceSelect.value)
-  showDuration()
-})
-
-// 10분 단위 조절. 같은 시술이라도 머리숱·기장에 따라 시간이 다르다.
-document.getElementById('f-minus').addEventListener('click', () => {
-  durationMin = Math.max(10, durationMin - 10)
-  showDuration()
-})
-document.getElementById('f-plus').addEventListener('click', () => {
-  durationMin += 10
-  showDuration()
+  if (serviceSelect.value !== ADD_NEW) return
+  const name = (prompt('새 시술 이름을 적어주세요\n(예: 세팅)') || '').trim()
+  if (name) services.add(name)
+  fillServices(name)
 })
 
 // 지금 고치고 있는 예약 id. 새로 넣는 중이면 null.
@@ -226,10 +204,9 @@ function openForm(row) {
 
   // 시술 목록을 새로 채운다 — 설정에서 추가·삭제한 것이 바로 반영되게
   fillServices(row ? row.service : undefined)
-  durationMin = row ? row.durationMin : services.defaultMinutes(serviceSelect.value)
-  showDuration()
   document.getElementById('f-name').value = row ? row.customerName : ''
   document.getElementById('f-price').value = row && row.price != null ? row.price : ''
+  document.getElementById('f-memo').value = row ? row.memo || '' : ''
   document.getElementById('f-save').textContent = row ? '고치기' : '저장'
 
   // 이미 있는 손님 이름을 제안한다 — 오타 하나로 이력이 쪼개지는 걸 막는다
@@ -256,9 +233,9 @@ document.getElementById('addForm').addEventListener('submit', () => {
     date: document.getElementById('f-date').value,
     time: document.getElementById('f-time').value,
     service: serviceSelect.value,
-    durationMin,
     customerName: document.getElementById('f-name').value.trim(),
     price: priceRaw > 0 ? priceRaw : null,
+    memo: document.getElementById('f-memo').value.trim(),
   }
   // 고치는 중이면 같은 예약을 갱신한다. 지우고 새로 넣으면
   // 손님 이력에 방문이 하나 더 생겨 숫자가 틀어진다.

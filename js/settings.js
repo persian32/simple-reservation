@@ -54,7 +54,7 @@ function renderServices() {
     row.className = 'service-row'
 
     const label = document.createElement('span')
-    label.textContent = `${s.name}  ${s.defaultMin}분`
+    label.textContent = s.name
 
     const actions = document.createElement('span')
     actions.className = 'service-actions'
@@ -96,18 +96,11 @@ function renderServices() {
 
 document.getElementById('s-add').addEventListener('click', () => {
   const nameInput = document.getElementById('s-name')
-  const minInput = document.getElementById('s-min')
 
   const name = nameInput.value.trim()
   if (!name) return
 
-  const minutes = Number(minInput.value)
-  if (!Number.isFinite(minutes) || minutes < 10) {
-    alert('기본 시간은 10분 이상으로 적어주세요.')
-    return
-  }
-
-  const result = services.add(name, minutes)
+  const result = services.add(name)
   if (result !== true) {
     // 별칭이면 어느 시술과 같은 것인지 알려준다 — "파마"를 넣으려 하면 "펌"이 있다고
     alert(result === name
@@ -117,7 +110,6 @@ document.getElementById('s-add').addEventListener('click', () => {
   }
 
   nameInput.value = ''
-  minInput.value = '30'
   renderServices()
 })
 

@@ -33,6 +33,8 @@ export function createStore(storage, deps = {}) {
         // 금액은 선택. 예약을 잡는 시점엔 모를 수 있어 비워두고
         // 시술이 끝난 뒤 '시간·내용 바꾸기' 로 채우는 길도 열어둔다.
         price: input.price ?? null,
+        // 비고. 언니가 손님·시술에 대해 적어두고 싶은 말 (예: 뿌리만, 두피 예민)
+        memo: input.memo || '',
         status: 'active',
         source: input.source || 'manual',
         createdAt: stamp,
@@ -118,6 +120,7 @@ export function createStore(storage, deps = {}) {
           customerName: r.customerName || '',
           durationMin: r.durationMin ?? 30,
           price: r.price ?? null,
+          memo: r.memo || '',
           status: r.status === 'cancelled' ? 'cancelled' : 'active',
           source: r.source || 'manual',
         }))

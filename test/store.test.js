@@ -49,6 +49,21 @@ test('추가할 때 빠진 값은 자동으로 채워진다', () => {
   assert.equal(r.updatedAt, '2026-03-17T09:00:00.000Z')
 })
 
+test('메모는 선택이다 — 없으면 빈칸, 주면 그대로 저장된다', () => {
+  const store = makeStore()
+  store.add({ date: '2026-03-17', time: '10:20', service: '염색' })
+  store.add({ date: '2026-03-17', time: '11:00', service: '펌', memo: '뿌리만' })
+  assert.equal(store.list()[0].memo, '')
+  assert.equal(store.list()[1].memo, '뿌리만')
+})
+
+test('메모가 없던 옛 백업을 불러오면 메모는 빈칸이 된다', () => {
+  const store = makeStore()
+  const old = JSON.stringify([{ id: 'a', date: '2026-03-17', time: '10:20', service: '염색' }])
+  store.importJson(old)
+  assert.equal(store.list()[0].memo, '')
+})
+
 test('소요 시간을 직접 주면 기본값 대신 그 값을 쓴다', () => {
   const store = makeStore()
   store.add({ date: '2026-03-17', time: '10:20', service: '염색', durationMin: 120 })

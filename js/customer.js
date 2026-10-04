@@ -39,6 +39,14 @@ if (visits.length === 0) {
     price.textContent = v.price != null ? `${v.price.toLocaleString('ko-KR')}원` : ''
 
     row.append(date, service, price)
+
+    // 메모는 있을 때만 아랫줄에
+    if (v.memo) {
+      const memo = document.createElement('span')
+      memo.className = 'memo'
+      memo.textContent = v.memo
+      row.append(memo)
+    }
     visitsEl.append(row)
   }
 }
