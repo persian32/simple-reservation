@@ -29,8 +29,9 @@
 
 ## 지금 상태
 
-- 1단계(손 입력 앱) **완성·배포**
-- 테스트 **53개** 통과, 의존성 **0개**
+- 1단계(손 입력 앱) **완성·배포** — 언니가 2026-07 말부터 실제로 쓰고 있다 (2026-10-04 기준 예약 246건, v23)
+- 한 달 사용 후 요청 반영: 여러 시술·제품 판매·메모·매출 — [남은 일](Roadmap) 참고
+- 테스트 **92개** 통과, 의존성 **0개**
 - 2단계(사진 판독)는 **조건부 보류** — [남은 일](Roadmap) 참고
 
 ## 써보기
@@ -39,7 +40,7 @@
 git clone https://github.com/persian32/simple-reservation.git
 cd simple-reservation
 python3 -m http.server 8000   # http://localhost:8000
-npm test                       # 53개
+npm test                       # 92개
 ```
 
 빌드도, `npm install` 도 없다.
