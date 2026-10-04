@@ -20,7 +20,7 @@
 js/services.js   시술 목록·별칭          ┐
 js/store.js      예약 저장·조회·수정      │ 순수 로직
 js/stats.js      손님 이력 계산           │ 저장소를 주입받아 DOM과 분리
-js/dates.js      날짜 형식                │ → node --test 로 검증 (77개)
+js/dates.js      날짜 형식                │ → node --test 로 검증 (87개)
 js/calendar.js   월간 격자                ┘
 
 js/home.js       홈(달력+목록+폼+메뉴)    ┐
@@ -59,14 +59,20 @@ id 생성기와 시계도 주입한다. 그래야 테스트 결과가 매번 같
 | `id` | 고유 번호 |
 | `date` / `time` | `'2026-07-29'` / `'10:20'` — **문자열.** `Date` 객체를 저장하지 않는다(직렬화 문제와 시간대 함정을 피한다) |
 | `customerName` | 없을 수 있다 |
-| `service` / `durationMin` | 시술명 문자열 / 분 — 2026-10부터 화면에서 안 쓴다. 새 예약엔 30이 들어간다 |
+| `items` | 품목 목록 `[{ kind: 'service' \| 'product', name, price }]`. 시술 여러 개·제품을 한 예약에 담는다. `price` 는 원 단위 숫자, 선택이라 `null` 이 많다 |
+| `durationMin` | 분 — 2026-10부터 화면에서 안 쓴다. 새 예약엔 30이 들어간다 |
 | `memo` | 비고. 없으면 빈 문자열 |
-| `price` | 원 단위 숫자. 선택 입력이라 `null` 인 줄이 많다 |
 | `status` | `active` \| `cancelled` |
 | `source` | `manual` \| `photo` — 2단계에서 덮어쓰기 규칙에 쓴다 |
 | `createdAt` / `updatedAt` | ISO 문자열 |
 
 **`services`** — 시술 목록. 저장된 게 없으면 기본 7종을 쓴다.
+
+### 옛 모양 데이터 — `normalize`
+
+2026-10 이전 예약은 `service`(시술 하나)와 `price`(금액 하나)였다. `store.js` 의 `normalize` 가 **읽을 때마다** 이걸 `items` 한 줄로 옮기고 옛 칸은 지운다. 저장소에서 읽을 때·새로 넣을 때·백업을 불러올 때 모두 이 함수를 지나므로, **화면 코드는 지금 모양 하나만 안다.**
+
+옛 칸을 남겨두지 않는 이유: 같은 정보를 두 군데 두면 언젠가 서로 어긋난다. 언니가 뭔가 하나 저장하는 순간 모든 예약이 새 모양으로 다시 쓰인다 — 변환이 정보를 잃지 않는다는 건 테스트로 확인했다.
 
 ### 지금 안 쓰는데 넣어둔 것
 
@@ -141,16 +147,15 @@ self.addEventListener('install', (e) => {
 ## 테스트
 
 ```bash
-npm test    # 77개
+npm test    # 87개
 ```
 
 | 파일 | 개수 |
 |---|---|
 | `test/services.test.js` | 18 |
-| `test/store.test.js` | 24 |
-| `test/stats.test.js` | 24 |
+| `test/store.test.js` | 31 |
+| `test/stats.test.js` | 29 |
 | `test/calendar.test.js` | 9 |
-| `test/dates.test.js` | 3 |
 
 화면 코드에는 테스트를 만들지 않는다. 대신 브라우저에서 눈으로 확인한다.
 
