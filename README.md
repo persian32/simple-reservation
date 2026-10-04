@@ -18,7 +18,7 @@ npm test
 
 ## 구조
 
-- `js/services.js` 시술 목록과 기본 소요 시간
+- `js/services.js` 시술 목록과 별칭
 - `js/store.js` 예약 저장·조회 (localStorage)
 - `js/stats.js` 손님 방문 이력 계산
 - `js/dates.js` 날짜 표시 형식 변환
