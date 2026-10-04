@@ -114,7 +114,7 @@ function renderSales() {
   const monthEnd = `${ym}-31` < today ? `${ym}-31` : today
   const won = (n) => `${n.toLocaleString('ko-KR')}원`
 
-  document.getElementById('salesMonthLabel').textContent = `${view.month}월`
+  document.getElementById('salesMonthLabel').textContent = `${view.month}월 전체`
   document.getElementById('salesMonth').textContent = won(salesTotal(rows, `${ym}-01`, monthEnd))
   document.getElementById('salesWeek').textContent = won(salesTotal(rows, mondayOf(today), today))
 }
