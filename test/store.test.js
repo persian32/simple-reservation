@@ -32,7 +32,7 @@ test('예약을 추가하면 목록에 들어간다', () => {
   const rows = store.list()
   assert.equal(rows.length, 1)
   assert.equal(rows[0].customerName, '화선언니')
-  assert.equal(rows[0].service, '염색')
+  assert.equal(rows[0].items[0].name, '염색')
 })
 
 test('추가할 때 빠진 값은 자동으로 채워진다', () => {
@@ -124,7 +124,7 @@ test('내보내기는 예약 전체를 JSON 문자열로 준다', () => {
 
   const parsed = JSON.parse(store.exportJson())
   assert.equal(parsed.length, 1)
-  assert.equal(parsed[0].service, '염색')
+  assert.equal(parsed[0].items[0].name, '염색')
 })
 
 test('되살리면 다시 활성 상태가 된다', () => {
@@ -236,21 +236,21 @@ test('모양이 깨진 줄은 건너뛴다', () => {
 test('금액을 넣으면 그대로 저장된다', () => {
   const store = makeStore()
   const row = store.add({ date: '2026-08-01', time: '10:00', service: '펌', price: 80000 })
-  assert.equal(row.price, 80000)
+  assert.equal(row.items[0].price, 80000)
 })
 
 test('금액을 안 넣으면 null 이다', () => {
   // 예약을 잡는 시점엔 금액을 모를 수 있다. 0 이 아니라 null 이어야
   // 손님 이력에서 '0원' 으로 잘못 보이지 않는다.
   const store = makeStore()
-  assert.equal(store.add({ date: '2026-08-01', time: '10:00', service: '펌' }).price, null)
+  assert.equal(store.add({ date: '2026-08-01', time: '10:00', service: '펌' }).items[0].price, null)
 })
 
 test('시술이 끝난 뒤 금액만 채워 넣을 수 있다', () => {
   const store = makeStore()
   const row = store.add({ date: '2026-08-01', time: '10:00', service: '펌' })
-  store.update(row.id, { price: 80000 })
-  assert.equal(store.list()[0].price, 80000)
+  store.update(row.id, { items: [{ kind: 'service', name: '펌', price: 80000 }] })
+  assert.equal(store.list()[0].items[0].price, 80000)
 })
 
 test('금액 없이 만든 옛 백업을 불러와도 모양이 같다', () => {
@@ -259,5 +259,57 @@ test('금액 없이 만든 옛 백업을 불러와도 모양이 같다', () => {
     { id: 'old1', date: '2026-07-02', time: '10:00', service: '염색' },
   ]))
   assert.equal(added, 1)
-  assert.equal(store.list()[0].price, null)
+  assert.equal(store.list()[0].items[0].price, null)
+})
+
+// ── 품목 (여러 시술 · 제품) ──────────────────────────────
+
+const svc = (name, price = null) => ({ kind: 'service', name, price })
+const prod = (name, price = null) => ({ kind: 'product', name, price })
+
+test('옛 모양 예약(시술 하나·금액 하나)은 읽을 때 품목 목록으로 바뀐다', () => {
+  // 언니 폰에 한 달 치 쌓인 데이터가 이 모양이다
+  const storage = fakeStorage()
+  storage.setItem('reservations', JSON.stringify([
+    { id: 'a', date: '2026-09-01', time: '10:00', service: '염색', price: 55000, status: 'active' },
+    { id: 'b', date: '2026-09-02', time: '11:00', service: '펌', status: 'active' },
+  ]))
+  const [a, b] = createStore(storage).list()
+  assert.deepEqual(a.items, [svc('염색', 55000)])
+  assert.deepEqual(b.items, [svc('펌')])
+  // 같은 정보를 두 군데 두지 않는다 — 옛 칸은 남기지 않는다
+  assert.equal('service' in a, false)
+  assert.equal('price' in a, false)
+})
+
+test('한 예약에 시술 여러 개와 제품을 시술별 금액으로 담는다', () => {
+  const store = makeStore()
+  const items = [svc('염색', 55000), svc('컷트', 15000), prod('샴푸', 25000)]
+  store.add({ date: '2026-10-05', time: '10:00', customerName: '화선언니', items })
+  assert.deepEqual(store.list()[0].items, items)
+})
+
+test('제품만 판 기록은 시각 없이 저장되고, 그날 목록 맨 뒤에 온다', () => {
+  const store = makeStore()
+  store.add({ date: '2026-10-05', customerName: '박선주', items: [prod('샴푸', 25000)] })
+  store.add({ date: '2026-10-05', time: '18:00', items: [svc('펌')] })
+  const rows = store.byDate('2026-10-05')
+  assert.equal(rows[0].time, '18:00')
+  assert.equal(rows[1].time, '')
+})
+
+test('제품만 산 날도 손님 이력에 방문으로 들어간다', () => {
+  const store = makeStore()
+  store.add({ date: '2026-10-05', customerName: '박선주', items: [prod('샴푸', 25000)] })
+  assert.equal(store.byCustomer('박선주').length, 1)
+})
+
+test('품목이 든 새 백업은 시각이 없어도 불러온다', () => {
+  const store = makeStore()
+  const backup = JSON.stringify([
+    { id: 'p1', date: '2026-10-05', time: '', items: [prod('샴푸', 25000)] },
+    { id: 'x', date: '2026-10-05', time: '10:00', items: [] },   // 품목이 없으면 깨진 줄
+  ])
+  assert.deepEqual(store.importJson(backup), { added: 1, skipped: 1 })
+  assert.deepEqual(store.list()[0].items, [prod('샴푸', 25000)])
 })

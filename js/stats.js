@@ -8,6 +8,13 @@ function daysBetween(fromDate, toDate) {
   return Math.round((to - from) / DAY_MS)
 }
 
+// 예약의 품목을 한 줄로. 시술은 ' · ' 로 잇고 제품은 ' + ' 뒤에 붙인다.
+// 예: [염색, 컷트, 샴푸(제품)] → '염색 · 컷트 + 샴푸'. 제품만 있으면 제품 이름만.
+export function itemsLabel(items = []) {
+  const names = (kind) => items.filter((i) => i.kind === kind).map((i) => i.name).join(' · ')
+  return [names('service'), names('product')].filter(Boolean).join(' + ')
+}
+
 // 한 손님의 방문 기록에서 요약을 뽑는다.
 // visits: [{ date: 'YYYY-MM-DD', ... }] — 순서는 상관없다.
 // today: 주면 아직 오지 않은 예약을 방문으로 세지 않는다.
@@ -50,13 +57,14 @@ export function customerList(rows, today) {
       // 지난 방문 중 가장 늦은 줄. 날짜만으로는 같은 날 두 건을 못 가르므로 시각까지 본다.
       const past = visits
         .filter((v) => !today || v.date <= today)
-        .sort((a, b) => a.date.localeCompare(b.date) || (a.time || '').localeCompare(b.time || ''))
+        // 시각 없는 제품 판매는 홈 목록처럼 그날 맨 뒤로 본다
+        .sort((a, b) => a.date.localeCompare(b.date) || (a.time || '99').localeCompare(b.time || '99'))
       return {
         name,
         ...customerStats(visits, today),
-        // 마지막으로 무슨 시술을 했는지. 이름을 눌러 이력에 들어가지 않아도
-        // 목록에서 바로 보이게 하려고 같이 들고 나온다.
-        lastService: past.length ? past[past.length - 1].service : null,
+        // 마지막으로 무슨 시술을 했는지(여러 개면 이어서, 제품만 샀으면 제품).
+        // 이름을 눌러 이력에 들어가지 않아도 목록에서 바로 보이게 하려고 같이 들고 나온다.
+        lastService: past.length ? itemsLabel(past[past.length - 1].items) : null,
         // 아직 오지 않은 예약 중 가장 이른 것. 지난 방문과 섞어서 '마지막' 이라고
         // 쓰면 8/14 예약이 마지막 방문으로 보인다 — 그래서 따로 뽑는다.
         nextVisit: dates.find((d) => d > today) || null,

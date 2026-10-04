@@ -103,13 +103,18 @@ main { padding: 8px 20px; }
 
 .empty { color: var(--muted); padding: 40px 0; text-align: center; }
 
-/* 아래 고정 버튼 */
-.fab {
+/* 아래 고정 버튼 — 예약 추가(넓게) + 제품 판매 */
+.fab-row {
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
   width: min(calc(100% - 40px), 440px);
   bottom: 24px;
+  display: flex;
+  gap: 10px;
+}
+.fab {
+  flex: 1;
   padding: 16px;
   font-size: 17px;
   font-weight: 600;
@@ -118,6 +123,12 @@ main { padding: 8px 20px; }
   background: var(--accent);
   border: none;
   border-radius: 12px;
+}
+.fab-sub {
+  flex: 0 0 auto;
+  color: var(--accent);
+  background: var(--surface);
+  border: 1px solid var(--accent);
 }
 
 /* 폼 */
@@ -145,6 +156,28 @@ dialog {
   color: var(--text);
 }
 dialog::backdrop { background: rgba(0, 0, 0, 0.4); }
+
+/* 품목 한 줄: 이름 / 금액 / ✕ */
+.line { display: flex; gap: 8px; margin-bottom: 8px; }
+.line select, .line .line-name { flex: 1; min-width: 0; }
+.line .line-price { width: 104px; flex: none; }
+.line .line-del {
+  flex: none;
+  width: 44px;
+  font-size: 18px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--muted);
+}
+.line-add {
+  padding: 8px 0;
+  font-size: 15px;
+  font-family: inherit;
+  border: none;
+  background: none;
+  color: var(--accent);
+}
 
 .dialog-actions {
   display: flex;
@@ -181,6 +214,14 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.4); }
 .visit .date { font-variant-numeric: tabular-nums; }
 .visit .service { flex: 1; margin-left: 20px; color: var(--muted); }
 .visit .price { font-variant-numeric: tabular-nums; }
+.visit .item {
+  flex-basis: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding-left: 20px;
+  font-size: 15px;
+  color: var(--muted);
+}
 .visit .memo { flex-basis: 100%; font-size: 14px; color: var(--muted); margin-top: 4px; }
 
 .summary {

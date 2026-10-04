@@ -38,14 +38,16 @@
         <input type="date" id="f-date" required>
       </div>
 
-      <div class="field">
+      <div class="field" id="f-time-field">
         <label for="f-time">시각</label>
         <input type="time" id="f-time" step="600" required>
       </div>
 
-      <div class="field">
-        <label for="f-service">시술</label>
-        <select id="f-service"></select>
+      <!-- 시술·제품은 줄 단위. 한 줄 = 이름 + 금액(선택) + ✕ -->
+      <div class="field" id="f-services-field">
+        <label>시술</label>
+        <div id="f-services"></div>
+        <button type="button" class="line-add" id="f-add-service">+ 시술 더하기</button>
       </div>
 
       <div class="field">
@@ -55,8 +57,10 @@
       </div>
 
       <div class="field">
-        <label for="f-price">금액 (선택)</label>
-        <input type="text" id="f-price" inputmode="numeric" autocomplete="off" placeholder="예: 80000">
+        <label>제품</label>
+        <div id="f-products"></div>
+        <button type="button" class="line-add" id="f-add-product">+ 제품 더하기</button>
+        <datalist id="knownProducts"></datalist>
       </div>
 
       <div class="field">
@@ -82,7 +86,10 @@
     </div>
   </dialog>
 
-  <button id="addBtn" class="fab">+ 직접 추가</button>
+  <div class="fab-row">
+    <button id="addBtn" class="fab">+ 직접 추가</button>
+    <button id="saleBtn" class="fab fab-sub">+ 제품 판매</button>
+  </div>
 
   <!-- 서비스 워커 등록. home.js 안이 아니라 여기서 하는 이유:
        home.js 가 오류로 죽어도 이 줄은 살아 있어야, 다음 접속 때 앱이

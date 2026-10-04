@@ -1,5 +1,5 @@
 import { createStore } from './store.js'
-import { customerStats } from './stats.js'
+import { customerStats, itemsLabel } from './stats.js'
 import { formatDay, todayISO } from './dates.js'
 
 const store = createStore(localStorage)
@@ -11,6 +11,23 @@ document.getElementById('name').textContent = name
 
 const visits = store.byCustomer(name)   // 최근 방문이 먼저
 const visitsEl = document.getElementById('visits')
+
+// 금액은 선택 입력이라 없는 경우가 많다. 없으면 칸을 비워둔다 —
+// '0원' 이나 '금액 없음' 으로 채우면 안 받은 것처럼 읽힌다.
+const won = (n) => (n != null ? `${n.toLocaleString('ko-KR')}원` : '')
+
+// 품목 금액의 합. 하나도 안 적었으면 null (0원이 아니다).
+function total(items) {
+  const prices = items.map((i) => i.price).filter((p) => p != null)
+  return prices.length ? prices.reduce((a, b) => a + b, 0) : null
+}
+
+function span(className, text) {
+  const el = document.createElement('span')
+  el.className = className
+  el.textContent = text
+  return el
+}
 
 if (visits.length === 0) {
   const empty = document.createElement('p')
@@ -28,17 +45,18 @@ if (visits.length === 0) {
     date.className = 'date'
     date.textContent = v.date > today ? `${formatDay(v.date)} 예약` : formatDay(v.date)
 
-    const service = document.createElement('span')
-    service.className = 'service'
-    service.textContent = v.service
+    // 윗줄: 날짜 / 품목 / 그날 합계
+    row.append(date, span('service', itemsLabel(v.items)), span('price', won(total(v.items))))
 
-    // 금액은 선택 입력이라 없는 예약이 많다. 없으면 칸을 비워둔다 —
-    // '0원' 이나 '금액 없음' 으로 채우면 안 받은 것처럼 읽힌다.
-    const price = document.createElement('span')
-    price.className = 'price'
-    price.textContent = v.price != null ? `${v.price.toLocaleString('ko-KR')}원` : ''
-
-    row.append(date, service, price)
+    // 품목이 둘 이상이면 아랫줄에 품목별 금액. 하나면 윗줄과 같은 말이라 안 그린다.
+    if (v.items.length > 1) {
+      for (const i of v.items) {
+        const line = document.createElement('span')
+        line.className = 'item'
+        line.append(span('item-name', i.kind === 'product' ? `${i.name} (제품)` : i.name), span('price', won(i.price)))
+        row.append(line)
+      }
+    }
 
     // 메모는 있을 때만 아랫줄에
     if (v.memo) {
