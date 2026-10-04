@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { customerStats, customerList, itemsLabel } from '../js/stats.js'
+import { customerStats, customerList, itemsLabel, salesTotal } from '../js/stats.js'
 
 test('방문 기록이 없으면 0회', () => {
   const s = customerStats([])
@@ -246,4 +246,30 @@ test('같은 날 시술 뒤에 제품만 판 기록이 있으면 제품이 최�
     { customerName: '박선주', date: '2026-08-01', time: '13:00', items: [svc('펌')], status: 'active' },
   ], '2026-08-05')
   assert.equal(list[0].lastService, '트리트먼트')
+})
+
+// ── 매출 합계 ───────────────────────────────────────────
+
+const paid = (date, prices, status = 'active') => ({
+  date, status, items: prices.map((price, i) => ({ kind: i ? 'product' : 'service', name: 'x', price })),
+})
+
+test('기간 안의 품목 금액을 모두 더한다 — 시술과 제품 모두', () => {
+  const rows = [paid('2026-10-01', [55000, 25000]), paid('2026-10-03', [15000])]
+  assert.equal(salesTotal(rows, '2026-10-01', '2026-10-04'), 95000)
+})
+
+test('취소한 예약은 매출에서 빠진다', () => {
+  const rows = [paid('2026-10-01', [55000]), paid('2026-10-02', [80000], 'cancelled')]
+  assert.equal(salesTotal(rows, '2026-10-01', '2026-10-04'), 55000)
+})
+
+test('기간 밖(아직 안 온 예약 포함)은 빠진다', () => {
+  const rows = [paid('2026-09-30', [10000]), paid('2026-10-02', [20000]), paid('2026-10-05', [30000])]
+  assert.equal(salesTotal(rows, '2026-10-01', '2026-10-04'), 20000)
+})
+
+test('금액을 안 적은 품목은 0원으로 친다', () => {
+  assert.equal(salesTotal([paid('2026-10-01', [null, 25000])], '2026-10-01', '2026-10-01'), 25000)
+  assert.equal(salesTotal([], '2026-10-01', '2026-10-31'), 0)
 })

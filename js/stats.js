@@ -74,3 +74,15 @@ export function customerList(rows, today) {
     })
     .sort((a, b) => b.latestDate.localeCompare(a.latestDate))
 }
+
+// 기간(from~to, 둘 다 포함) 안의 매출 합계. 품목(시술·제품) 금액을 모두 더한다.
+// 취소한 예약은 뺀다. 아직 안 온 예약을 빼려면 to 를 오늘로 넘긴다.
+// 금액을 안 적은 품목은 0원으로 친다 — 합계라서 빈칸을 따로 표시할 방법이 없다.
+export function salesTotal(rows, from, to) {
+  let sum = 0
+  for (const r of rows) {
+    if (r.status !== 'active' || r.date < from || r.date > to) continue
+    for (const i of r.items) sum += i.price || 0
+  }
+  return sum
+}

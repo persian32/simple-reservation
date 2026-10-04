@@ -103,6 +103,24 @@ main { padding: 8px 20px; }
 
 .empty { color: var(--muted); padding: 40px 0; text-align: center; }
 
+/* 매출 — 달력 아래, 눌러야 펼쳐진다 */
+.sales {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 20px;
+  font-size: 15px;
+  color: var(--muted);
+}
+.sales summary { padding: 10px 0; cursor: pointer; }
+.sales-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.sales[open] { padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+
 /* 아래 고정 버튼 — 예약 추가(넓게) + 제품 판매 */
 .fab-row {
   position: fixed;

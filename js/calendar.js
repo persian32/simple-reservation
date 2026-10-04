@@ -30,3 +30,13 @@ export function countByDate(rows) {
   }
   return counts
 }
+
+// 그 날짜가 속한 주의 월요일. 매출의 '이번 주' 는 월요일부터 센다.
+// 휴무일은 따지지 않는다 — 1인 가게라 자주 바뀐다.
+export function mondayOf(iso) {
+  const [y, m, d] = iso.split('-').map(Number)
+  const date = new Date(y, m - 1, d)
+  // getDay(): 일요일 0 … 토요일 6. 일요일은 6일 전, 나머지는 (요일-1)일 전이 월요일
+  date.setDate(d - ((date.getDay() + 6) % 7))
+  return todayISO(date)
+}

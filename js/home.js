@@ -1,8 +1,8 @@
 import { createStore } from './store.js'
 import { todayISO, formatDay } from './dates.js'
 import { createServices } from './services.js'
-import { monthGrid, addMonths, countByDate } from './calendar.js'
-import { itemsLabel } from './stats.js'
+import { monthGrid, addMonths, countByDate, mondayOf } from './calendar.js'
+import { itemsLabel, salesTotal } from './stats.js'
 
 const store = createStore(localStorage)
 const services = createServices(localStorage)
@@ -100,6 +100,23 @@ function renderCalendar() {
 
     grid.append(btn)
   }
+
+  renderSales()
+}
+
+// 매출 — 달력에 보이는 달의 합계와 이번 주(월요일~오늘) 합계.
+// 달력을 넘기면 그 달 매출로 바뀐다. 아직 안 온 예약은 받은 돈이 아니므로 오늘까지만 센다.
+function renderSales() {
+  const today = todayISO()
+  const rows = store.list()
+  const ym = `${view.year}-${String(view.month).padStart(2, '0')}`
+  // 'YYYY-MM-31' 은 30일까지인 달에도 문자열 비교로 그 달 끝까지를 덮는다
+  const monthEnd = `${ym}-31` < today ? `${ym}-31` : today
+  const won = (n) => `${n.toLocaleString('ko-KR')}원`
+
+  document.getElementById('salesMonthLabel').textContent = `${view.month}월`
+  document.getElementById('salesMonth').textContent = won(salesTotal(rows, `${ym}-01`, monthEnd))
+  document.getElementById('salesWeek').textContent = won(salesTotal(rows, mondayOf(today), today))
 }
 
 // 고른 날짜의 예약만 시간순으로 보여준다

@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { monthGrid, addMonths, countByDate } from '../js/calendar.js'
+import { monthGrid, addMonths, countByDate, mondayOf } from '../js/calendar.js'
 
 test('격자는 항상 42칸이다', () => {
   // 달마다 줄 수가 바뀌면 아래 목록이 흔들린다
@@ -54,4 +54,10 @@ test('날짜별로 예약 건수를 센다', () => {
 
 test('예약이 없으면 빈 목록이다', () => {
   assert.equal(countByDate([]).size, 0)
+})
+
+test('이번 주는 월요일부터 — 일요일이면 6일 전 월요일', () => {
+  assert.equal(mondayOf('2026-10-04'), '2026-09-28')  // 일요일 → 달을 넘어간다
+  assert.equal(mondayOf('2026-10-05'), '2026-10-05')  // 월요일은 그대로
+  assert.equal(mondayOf('2026-10-08'), '2026-10-05')  // 목요일
 })

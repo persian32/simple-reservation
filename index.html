@@ -29,6 +29,14 @@
     <div class="cal-grid" id="calGrid"></div>
   </div>
 
+  <!-- 매출은 눌렀을 때만 보인다. 손님이 옆에서 화면을 볼 수 있다.
+       open 속성이 없으므로 앱을 열 때마다 접힌 채로 시작한다. -->
+  <details class="sales">
+    <summary>매출</summary>
+    <div class="sales-row"><span id="salesMonthLabel"></span><span id="salesMonth"></span></div>
+    <div class="sales-row"><span>이번 주</span><span id="salesWeek"></span></div>
+  </details>
+
   <main id="list"></main>
 
   <dialog id="addDialog">
