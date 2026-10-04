@@ -228,7 +228,9 @@ document.getElementById('f-cancel').addEventListener('click', () => dialog.close
 
 document.getElementById('addForm').addEventListener('submit', () => {
   // 비워두면 null. 0원을 받는 경우는 없으므로 빈칸과 0을 굳이 구분하지 않는다.
-  const priceRaw = Number(document.getElementById('f-price').value)
+  // 숫자 칸(type=number)은 ▲▼ 화살표가 붙고 1,000원 단위가 아니면 저장을 막아서
+  // 글자 칸으로 바꿨다. '55,000' 처럼 쉼표나 '원'을 붙여도 숫자만 골라 쓴다.
+  const priceRaw = Number(document.getElementById('f-price').value.replace(/[^0-9]/g, ''))
   const input = {
     date: document.getElementById('f-date').value,
     time: document.getElementById('f-time').value,
