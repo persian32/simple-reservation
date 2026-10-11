@@ -10,7 +10,7 @@ Simple Reservation is a booking app for a one-person hair salon. The owner takes
 - **What it does:** She keeps writing on paper and copies bookings into a calendar that looks like her wall calendar. The one thing paper cannot do is remember each customer: tapping a name shows past visits, services, and how often the customer comes.
 - **Privacy and cost:** No server, no account, no fee. Data stays on her phone, and she can export a backup file.
 - **My role:** I observed and interviewed the owner, decided what to build and what to leave out, delivered each version to her phone, and collected her feedback. The code was written with AI coding tools (Claude Code), with 92 automated tests.
-- **Status:** In use since late July 2026, with 246 bookings recorded as of October 4, 2026. After a month of use she sent six requests (a memo field, product sales, several services per booking, sales totals, and more); five have been added.
+- **Status:** Developed in late July 2026 and in use since August 2026, with 246 bookings recorded as of October 2026. After a month of use she sent six requests (a memo field, product sales, several services per booking, sales totals, and more); five have been added.
 - **Open question:** Customers who do not show up are still counted as visits. I have not fixed this yet, because asking her "Did they come?" every day would add work, which is what this app tries hardest to avoid.
 
 ---
